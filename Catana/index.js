@@ -1,4 +1,60 @@
-function createTileSVG(row, column){ //0 based index
+import {gameTile} from "./gameTile.js";
+
+
+
+function shuffle(array) { //function from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+    let currentIndex = array.length,  randomIndex;
+  
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+  
+      // Pick a remaining element.
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+  
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+  
+    return array;
+  }
+
+function makeTiles(){ //initializes the (non-randomized) array of all tiles on board
+    const possibleNumbers = [2,3,3,4,4,5,5,6,6,8,8,9,9,10,10,11,11,12];
+    const randomizedNumbers = shuffle(possibleNumbers);
+    //make wood tiles
+        for(let i = 0 ; i<4; i++){
+            let woodTile = new gameTile("Wood",randomizedNumbers[i],false);
+            tileArray.push(woodTile);
+        }
+    //make wheat tiles
+    for(let i = 4 ; i<8; i++){
+        let wheatTile = new gameTile("Wheat",randomizedNumbers[i],false);
+        tileArray.push(wheatTile);
+    }
+    //make sheep tiles
+    for(let i = 8 ; i<12; i++){
+        let sheepTile = new gameTile("Sheep",randomizedNumbers[i],false);
+        tileArray.push(sheepTile);
+    }
+    //make brick tiles
+    for(let i = 12 ; i<15; i++){
+        let brickTile = new gameTile("Brick",randomizedNumbers[i],false);
+        tileArray.push(brickTile);
+    }
+    //make stone tiles
+    for(let i = 15 ; i<18; i++){
+        let stoneTile = new gameTile("Rock",randomizedNumbers[i],false);
+        tileArray.push(stoneTile);
+    }
+    //make desert tile
+    tileArray.push(new gameTile("Desert",0,true));
+
+    tileArray = shuffle(tileArray);
+}
+
+function createTileSVG(row, column){ //0 based index, creates the visual representation of a gametile
     let originalXCoordinates = [75,127.5,127.5,75,22.5,22.5];
     let originalYCoordinates = [37.5,67.5,127.5,157.5,127.5,67.5];
     if(row%2 !=0){
@@ -11,16 +67,51 @@ function createTileSVG(row, column){ //0 based index
     originalXCoordinates.forEach((currentElement,index,array) => {originalXCoordinates[index] = currentElement+horizontalSeperation});
     originalYCoordinates.forEach((currentElement,index,array)=>{originalYCoordinates[index] = currentElement+verticalSeperation});
     const newPositionString = ""+originalXCoordinates[0]+" "+originalYCoordinates[0]+", "+originalXCoordinates[1]+" "+originalYCoordinates[1]+", "+originalXCoordinates[2]+" "+originalYCoordinates[2]+", "+originalXCoordinates[3]+" "+originalYCoordinates[3]+", "+originalXCoordinates[4]+" "+originalYCoordinates[4]+", "+originalXCoordinates[5]+" "+originalYCoordinates[5];
+    const id = ""+row+"."+column;
     const xmlns = "http://www.w3.org/2000/svg";
     const svg = document.getElementById("board");
     const newPolygon = document.createElementNS(xmlns,"polygon");
-    newPolygon.setAttribute("id", ""+row+column);
+    newPolygon.setAttribute("id", id);
     newPolygon.setAttribute("points", newPositionString);
     newPolygon.setAttribute("stroke", "black");
-    newPolygon.setAttribute("fill", "pink");
+    newPolygon.setAttribute("fill", "white");
     newPolygon.setAttribute("stroke-width", "5");
+
+    // newPolygon.addEventListener("click",tileClicked);///////////////////////////////////////////////////////////uncomment this when done
+    tileMap.set(id,tileArray[mapCounter]);
+    
+
+    //add image svg
+    let tileType = tileArray[mapCounter].resource;
+    newPolygon.setAttribute("fill", "url(#"+tileType+")");
+
+    //add number value to tile
+    const newCircle = document.createElementNS(xmlns, "circle");
+    newCircle.setAttribute("id", id);
+    newCircle.setAttribute("cx",originalXCoordinates[3])
+    newCircle.setAttribute("cy",originalYCoordinates[2])
+    newCircle.setAttribute("r","20")
+    newCircle.setAttribute("stroke", "black");
+    newCircle.setAttribute("fill", "white");
+    newCircle.setAttribute("stroke-width", "2");
+    // newCircle.addEventListener("click",tileClicked);///////////////////////////////////////////////////////////uncomment this when done
+
+    //add number to circle
+    const newText = document.createElementNS(xmlns,"text");      
+    newText.setAttribute("id", id);
+    newText.setAttribute("x",originalXCoordinates[3]);
+    newText.setAttribute("y",originalYCoordinates[2]+9);
+    newText.setAttribute("fill","black");
+    newText.setAttribute("text-anchor","middle");
+    newText.setAttribute("font-size","2em");
+    newText.innerHTML = tileArray[mapCounter].number;
+    // newText.addEventListener("click",tileClicked);///////////////////////////////////////////////////////////uncomment this when done
+
     svg.appendChild(newPolygon);
-    //console.log(newPositionString);
+    svg.append(newCircle);
+    svg.append(newText);
+    mapCounter++;
+
 }
 
 function createVertex(row, column){ // 0 based index
@@ -56,10 +147,10 @@ function createVertex(row, column){ // 0 based index
     const xmlns = "http://www.w3.org/2000/svg";
     const svg = document.getElementById("board");
     const newTriangle = document.createElementNS(xmlns,"polygon");
-    newTriangle.setAttribute("id", ""+row+column);
+    newTriangle.setAttribute("id", ""+row+"."+column);
     newTriangle.setAttribute("points",""+pointOneX+" "+pointOneY+", "+pointTwoX+" "+pointTwoY+", "+pointThreeX+" "+pointThreeY);
     newTriangle.setAttribute("stroke", "black");
-    newTriangle.setAttribute("fill","green");
+    newTriangle.setAttribute("fill","white");
     newTriangle.setAttribute("stroke-width", "2.5");
     svg.appendChild(newTriangle);
 
@@ -72,10 +163,10 @@ function createRoadUp(pointsOne, pointsTwo,rowColumnOne, rowColumnTwo){
     const xmlns = "http://www.w3.org/2000/svg";
     const svg = document.getElementById("board");
     const newRectangle = document.createElementNS(xmlns,"polygon");
-    newRectangle.setAttribute("id", ""+rowColumnOne+rowColumnTwo);
+    newRectangle.setAttribute("id", ""+rowColumnOne+"."+rowColumnTwo);
     newRectangle.setAttribute("points",""+pointsOne[0]+" "+pointsOne[1]+", "+pointsOne[2]+" "+pointsOne[3]+", "+pointsTwo[0]+" "+pointsTwo[1]+", "+pointsTwo[2]+" "+pointsTwo[3]);
     newRectangle.setAttribute("stroke", "black");
-    newRectangle.setAttribute("fill","orange");
+    newRectangle.setAttribute("fill","white");
     newRectangle.setAttribute("stroke-width", "2.5");
     svg.appendChild(newRectangle);
 }
@@ -84,10 +175,10 @@ function createRoadDown(pointsOne, pointsTwo,rowColumnOne, rowColumnTwo){
     const xmlns = "http://www.w3.org/2000/svg";
     const svg = document.getElementById("board");
     const newRectangle = document.createElementNS(xmlns,"polygon");
-    newRectangle.setAttribute("id", ""+rowColumnOne+rowColumnTwo);
+    newRectangle.setAttribute("id", ""+rowColumnOne+"."+rowColumnTwo);
     newRectangle.setAttribute("points",""+pointsTwo[0]+" "+pointsTwo[1]+", "+pointsTwo[4]+" "+pointsTwo[5]+", "+pointsOne[0]+" "+pointsOne[1]+", "+pointsOne[4]+" "+pointsOne[5]);
     newRectangle.setAttribute("stroke", "black");
-    newRectangle.setAttribute("fill","orange");
+    newRectangle.setAttribute("fill","white");
     newRectangle.setAttribute("stroke-width", "2.5");
     svg.appendChild(newRectangle);
 }
@@ -105,14 +196,18 @@ function createRoadVertical (pointsOne, row, column){
     const xmlns = "http://www.w3.org/2000/svg";
     const svg = document.getElementById("board");
     const newRectangle = document.createElementNS(xmlns,"polygon");
-    newRectangle.setAttribute("id", ""+row+column+newrowColumnNumber);
+    newRectangle.setAttribute("id", ""+row+column+"."+newrowColumnNumber);
     newRectangle.setAttribute("points",""+pointsOne[2]+" "+pointsOne[3]+", "+pointsOne[4]+" "+pointsOne[5]+", "+verticalPoint2[0]+" "+verticalPoint2[1]+", "+verticalPoint1[0]+" "+verticalPoint1[1]);
     newRectangle.setAttribute("stroke", "black");
-    newRectangle.setAttribute("fill","orange");
+    newRectangle.setAttribute("fill","white");
     newRectangle.setAttribute("stroke-width", "2.5");
     svg.appendChild(newRectangle);
     console.log(""+row+column+newrowColumnNumber);
 }
+
+function initializeBoard(){
+
+makeTiles();
 
 createTileSVG(0,2);
 createTileSVG(0,3);
@@ -342,6 +437,11 @@ createRoadDown(vertexPoints2,vertexPoints1, "106", "117");
 vertexPoints1 = createVertex(10,8);
 createRoadUp(vertexPoints1, vertexPoints2, "117", "108");
 
+}
 
+let mapCounter = 0;
+let tileArray = [];
+let tileMap = new Map([]);
+initializeBoard();
 
 
