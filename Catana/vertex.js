@@ -1,6 +1,6 @@
 export class vertex{
     position;
-    ownerStatus = false;
+    power = 1; //1 = settlement, 2 = city
     tiles = [];
 
     constructor(position){
@@ -9,5 +9,13 @@ export class vertex{
 
     addTile(tile){
         this.tiles.push(tile);
+    }
+
+    claimVertex(){
+        this.ownerStatus=true;
+    }
+
+    buildTown(){
+        this.power=2;
     }
 }
