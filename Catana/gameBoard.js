@@ -264,6 +264,66 @@ export class gameBoard{
 
     }
 
+    createRowsTop(a1,a2,b1,b2,rowLength){
+        let vertexPoints1;
+        let vertexPoints2;
+        vertexPoints1 = this.createVertex(a1,a2);
+        vertexPoints2 = this.createVertex(b1,b2);
+        this.createRoadUp(vertexPoints1, vertexPoints2, ""+a1+"."+a2, ""+b1+"."+b2);
+        this.createRoadVertical(vertexPoints1, a1, a2);
+        a2 += 2;
+        vertexPoints1 = this.createVertex(a1,a2);
+        this.createRoadDown(vertexPoints2,vertexPoints1, ""+b1+"."+b2, ""+a1+"."+a2);
+        this.createRoadVertical(vertexPoints1, a1, a2);
+        b2+=2;
+        vertexPoints2 = this.createVertex(b1,b2);
+        
+        for(let i = 1; i<=rowLength; i++){
+            this.createRoadUp(vertexPoints1, vertexPoints2, ""+a1+"."+a2, ""+b1+"."+b2);
+            a2 += 2;
+            vertexPoints1 = this.createVertex(a1,a2);
+            this.createRoadDown(vertexPoints2,vertexPoints1, ""+b1+"."+b2, ""+a1+"."+a2);
+            this.createRoadVertical(vertexPoints1, a1, a2);
+            if(i!=rowLength){
+                b2+=2;
+                vertexPoints2 = this.createVertex(b1,b2);
+            }
+                    
+        }
+    }
+
+    createRowsBottom(a1,a2,b1,b2,rowLength,lastRow){
+    let vertexPoints1;
+    let vertexPoints2;
+    vertexPoints1 = this.createVertex(a1,a2);
+    vertexPoints2 = this.createVertex(b1,b2);
+    this.createRoadDown(vertexPoints1, vertexPoints2, ""+a1+"."+a2, ""+b1+"."+b2);
+    if(!lastRow){
+        this.createRoadVertical(vertexPoints2, b1, b2);
+    }
+    a2+=2;
+    vertexPoints1 = this.createVertex(a1,a2);
+    this.createRoadUp(vertexPoints1, vertexPoints2, ""+b1+"."+b2, ""+a1+"."+a2);
+    b2+=2;
+    vertexPoints2 = this.createVertex(b1,b2); 
+  
+    for(let i = 1; i<=rowLength; i++){
+        this.createRoadDown(vertexPoints2, vertexPoints1, ""+a1+"."+a2, ""+b1+"."+b2);
+        if(!lastRow){
+            this.createRoadVertical(vertexPoints2, b1, b2);
+        }
+        a2 += 2;
+        vertexPoints1 = this.createVertex(a1,a2);
+        this.createRoadUp(vertexPoints1,vertexPoints2, ""+b1+"."+b2, ""+a1+"."+a2);
+     
+        if(i!=rowLength){
+            b2+=2;
+            vertexPoints2 = this.createVertex(b1,b2);
+        }
+                
+    }
+}
+
     connectVertexToTiles(){
 
         let topLeft =[1,0];
@@ -304,237 +364,46 @@ export class gameBoard{
 
     initializeBoard(){
 
-    this.makeTiles();
+        this.makeTiles();
 
-    this.createTileSVG(0,2);
-    this.createTileSVG(0,3);
-    this.createTileSVG(0,4);
+        this.createTileSVG(0,2);
+        this.createTileSVG(0,3);
+        this.createTileSVG(0,4);
 
-    this.createTileSVG(1,1);
-    this.createTileSVG(1,2);
-    this.createTileSVG(1,3);
-    this.createTileSVG(1,4);
+        this.createTileSVG(1,1);
+        this.createTileSVG(1,2);
+        this.createTileSVG(1,3);
+        this.createTileSVG(1,4);
 
-    this.createTileSVG(2,1);
-    this.createTileSVG(2,2);
-    this.createTileSVG(2,3);
-    this.createTileSVG(2,4);
-    this.createTileSVG(2,5);
+        this.createTileSVG(2,1);
+        this.createTileSVG(2,2);
+        this.createTileSVG(2,3);
+        this.createTileSVG(2,4);
+        this.createTileSVG(2,5);
 
-    this.createTileSVG(3,1);
-    this.createTileSVG(3,2);
-    this.createTileSVG(3,3);
-    this.createTileSVG(3,4);
+        this.createTileSVG(3,1);
+        this.createTileSVG(3,2);
+        this.createTileSVG(3,3);
+        this.createTileSVG(3,4);
 
-    this.createTileSVG(4,2);
-    this.createTileSVG(4,3);
-    this.createTileSVG(4,4);
+        this.createTileSVG(4,2);
+        this.createTileSVG(4,3);
+        this.createTileSVG(4,4);
 
 
-    let vertexPoints1 = this.createVertex(1,2);
-    let vertexPoints2 = this.createVertex(0,3);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "1.2", "0.3");
+        this.createRowsTop(1,2,0,3,2);
 
-    this.createRoadVertical(vertexPoints1, 1, 2);
+        this.createRowsTop(3,1,2,2,3); 
 
-    vertexPoints1 = this.createVertex(1,4);
-    this.createRoadDown(vertexPoints2, vertexPoints1, "0.3", "1.4");
+        this.createRowsTop(5,0,4,1,4);
 
-    this.createRoadVertical(vertexPoints1, 1, 4);
+        this.createRowsBottom(6,0,7,1,4,false);
 
-    vertexPoints2 = this.createVertex(0,5);
-    this.createRoadUp(vertexPoints1,vertexPoints2, "1.4", "0.5");
+        this.createRowsBottom(8,1,9,2,3,false);
 
-    vertexPoints1 = this.createVertex(1,6);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "0.5", "1.6");
+        this.createRowsBottom(10,2,11,3,2,true);
 
-    this.createRoadVertical(vertexPoints1, 1, 6);
-
-    vertexPoints2 = this.createVertex(0,7);
-    this.createRoadUp(vertexPoints1,vertexPoints2, "1.6", "0.7");
-
-    vertexPoints1 = this.createVertex(1,8); 
-    this.createRoadDown(vertexPoints2,vertexPoints1, "0.7", "1.8");
-
-    this.createRoadVertical(vertexPoints1, 1, 8);
-
-
-    vertexPoints1 = this.createVertex(3,1);
-    vertexPoints2 = this.createVertex(2,2);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "3.1", "2.2");
-
-    this.createRoadVertical(vertexPoints1, 3, 1);
-
-    vertexPoints1 = this.createVertex(3,3);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "2.2", "3.3");
-
-    this.createRoadVertical(vertexPoints1, 3, 3);
-
-    vertexPoints2 = this.createVertex(2,4);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "3.3", "2.4");
-
-    vertexPoints1 = this.createVertex(3,5);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "2.4", "3.5");
-
-    this.createRoadVertical(vertexPoints1, 3, 5);
-
-    vertexPoints2 = this.createVertex(2,6);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "3.5", "2.6");
-
-    vertexPoints1 = this.createVertex(3,7);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "2.4", "3.7");
-
-    this.createRoadVertical(vertexPoints1, 3, 7);
-
-    vertexPoints2 = this.createVertex(2,8);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "3.7", "2.8");
-
-    vertexPoints1 = this.createVertex(3,9);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "2.4", "3.9");
-
-    this.createRoadVertical(vertexPoints1, 3,9);
-    
-
-    vertexPoints1 = this.createVertex(5,0);
-    vertexPoints2 = this.createVertex(4,1);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "5.0", "4.1");
-
-    this.createRoadVertical(vertexPoints1, 5, 0);
-
-    vertexPoints1 = this.createVertex(5,2);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "4.1", "5.2");
-
-    this.createRoadVertical(vertexPoints1, 5, 2);
-
-    vertexPoints2 = this.createVertex(4,3);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "5.2", "4.3");
-
-    vertexPoints1 = this.createVertex(5,4);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "4.3", "5.4");
-
-    this.createRoadVertical(vertexPoints1, 5, 4);
-
-    vertexPoints2 = this.createVertex(4,5);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "5.4", "4.5");
-
-    vertexPoints1 = this.createVertex(5,6);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "4.5", "5.6");
-
-    this.createRoadVertical(vertexPoints1, 5, 6);
-
-    vertexPoints2 = this.createVertex(4,7);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "5.6", "4.7");
-
-    vertexPoints1 = this.createVertex(5,8);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "4.7", "5.8");
-
-    this.createRoadVertical(vertexPoints1, 5,8);
-
-    vertexPoints2 = this.createVertex(4,9);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "5.8", "4.9");
-
-    vertexPoints1 = this.createVertex(5,10);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "4.9", "5.10");
-
-    this.createRoadVertical(vertexPoints1, 5,10);
-
-
-    vertexPoints1 = this.createVertex(6,0);
-    vertexPoints2 = this.createVertex(7,1);
-    this.createRoadDown(vertexPoints1, vertexPoints2, "5.0", "4.1");
-
-    this.createRoadVertical(vertexPoints2, 7, 1);
-
-    vertexPoints1 = this.createVertex(6,2);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "7.1", "6.1");
-
-    vertexPoints2 = this.createVertex(7,3);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "6.1", "7.3");
-
-    this.createRoadVertical(vertexPoints2, 7, 3);
-
-    vertexPoints1 = this.createVertex(6,4);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "7.3", "6.4");
-
-    vertexPoints2 = this.createVertex(7,5);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "6.4", "7.5");
-
-    this.createRoadVertical(vertexPoints2, 7,5);
-
-    vertexPoints1 = this.createVertex(6,6);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "7.5", "6.6");
-
-    vertexPoints2 = this.createVertex(7,7);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "6.6", "7.7");
-
-    this.createRoadVertical(vertexPoints2, 7,7);
-
-    vertexPoints1 = this.createVertex(6,8);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "7.7", "6.8");
-
-    vertexPoints2 = this.createVertex(7,9);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "6.8", "7.9");
-
-    this.createRoadVertical(vertexPoints2, 7,9);
-
-    vertexPoints1 = this.createVertex(6,10);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "7.7", "6.10");
-
-
-    vertexPoints1 = this.createVertex(8,1);
-    vertexPoints2 = this.createVertex(9,2);
-    this.createRoadDown(vertexPoints1, vertexPoints2, "8.1", "9.2");
-
-    this.createRoadVertical(vertexPoints2, 9, 2);
-
-    vertexPoints1 = this.createVertex(8,3);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "9.2", "8.3");
-
-    vertexPoints2 = this.createVertex(9,4);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "8.3", "9.4");
-
-    this.createRoadVertical(vertexPoints2, 9, 4);
-
-    vertexPoints1 = this.createVertex(8,5);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "9.4", "8.5");
-
-    vertexPoints2 = this.createVertex(9,6);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "8.5", "9.6");
-
-    this.createRoadVertical(vertexPoints2, 9,6);       
-
-    vertexPoints1 = this.createVertex(8,7);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "9.6", "8.7");
-
-    vertexPoints2 = this.createVertex(9,8);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "8.7", "9.8");
-
-    this.createRoadVertical(vertexPoints2, 9,8);
-
-    vertexPoints1 = this.createVertex(8,9);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "9.8", "8.9");
-
-
-    vertexPoints1 = this.createVertex(10,2);
-    vertexPoints2 = this.createVertex(11,3);
-    this.createRoadDown(vertexPoints1, vertexPoints2, "10.2", "11.3");
-
-    vertexPoints1 = this.createVertex(10,4);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "11.3", "10.4");
-
-    vertexPoints2 = this.createVertex(11,5);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "10.4", "11.5");
-
-    vertexPoints1 = this.createVertex(10,6);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "11.5", "10.6");
-
-    vertexPoints2 = this.createVertex(11,7);
-    this.createRoadDown(vertexPoints2,vertexPoints1, "10.6", "11.7");
-
-    vertexPoints1 = this.createVertex(10,8);
-    this.createRoadUp(vertexPoints1, vertexPoints2, "11.7", "10.8");
-
-    this.connectVertexToTiles();
+        this.connectVertexToTiles();
 
     }
 }

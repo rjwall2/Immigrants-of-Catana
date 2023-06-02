@@ -48,11 +48,11 @@ export class player{
 
                 if(wheatIndices.length ==2 && rockIndices.length == 3){
                     requiredResources = true;
-                    this.resourceCards.splice(wheatIndices[0],1);
-                    this.resourceCards.splice(wheatIndices[1],1);
-                    this.resourceCards.splice(rockIndices[0],1);
-                    this.resourceCards.splice(rockIndices[1],1);
-                    this.resourceCards.splice(rockIndices[2],1);
+                    // this.resourceCards.splice(wheatIndices[0],1);
+                    // this.resourceCards.splice(wheatIndices[1],1);
+                    // this.resourceCards.splice(rockIndices[0],1);
+                    // this.resourceCards.splice(rockIndices[1],1);
+                    // this.resourceCards.splice(rockIndices[2],1);
                 }
 
                 if(connectingRoad && requiredResources){
@@ -74,10 +74,6 @@ export class player{
 
                 if(woodIndex!=-1||brickIndex!=-1||sheepIndex!=-1||wheatIndex!=-1){
                     requiredResources = true;
-                    this.resourceCards.splice(woodIndex,1);
-                    this.resourceCards.splice(brickIndex,1);
-                    this.resourceCards.splice(sheepIndex,1);
-                    this.resourceCards.splice(wheatIndex,1);
                 }
 
                 if(connectingRoad && requiredResources){
@@ -103,8 +99,6 @@ export class player{
 
             if(woodIndex!=-1||brickIndex!=-1){
                 requiredResources = true;
-                this.resourceCards.splice(woodIndex,1);
-                this.resourceCards.splice(brickIndex,1);
             }
 
             if(connectingRoad && requiredResources){
@@ -114,18 +108,62 @@ export class player{
         }
 
         return 0;
-    }
+    }    
 
     claimElement(id, successCode, board){
         if(successCode == 1){ //road
+            const woodIndex = this.resourceCards.indexOf("Wood");
+            const brickIndex = this.resourceCards.indexOf("Brick");
+
+            this.resourceCards.splice(woodIndex,1);
+            this.resourceCards.splice(brickIndex,1);
+
             this.ownedRoads.set(id,board.roadMap.get(id));
-            board.roadMap.delete("id");
+            board.roadMap.delete(id);
         }
         if(successCode == 2){ //settlement
+            const woodIndex = this.resourceCards.indexOf("Wood");
+            const brickIndex = this.resourceCards.indexOf("Brick");
+            const sheepIndex = this.resourceCards.indexOf("Sheep");
+            const wheatIndex = this.resourceCards.indexOf("Wheat");
+
+            this.resourceCards.splice(woodIndex,1);
+            this.resourceCards.splice(brickIndex,1);
+            this.resourceCards.splice(sheepIndex,1);
+            this.resourceCards.splice(wheatIndex,1);
+
             this.ownedVertices.set(id,board.vertexMap.get(id));
-            board.vertexMap.delete("id");
+            board.vertexMap.delete(id);
         }
         if(successCode == 3){ //city
+
+            const wheatIndices = [];
+            const rockIndices = [];
+            this.resourceCards.forEach((value,index) =>{
+                if (wheatIndices.length ==2){
+
+                } else{
+                    if(value =="Wheat"){
+                        wheatIndices.push(index);
+                    }
+                }
+
+                if (rockIndices.length ==3){
+
+                } else{
+                    if(value =="Rock"){
+                        rockIndices.push(index);
+                    }
+                }
+            })
+
+            this.resourceCards.splice(wheatIndices[0],1);
+            this.resourceCards.splice(wheatIndices[1],1);
+            this.resourceCards.splice(rockIndices[0],1);
+            this.resourceCards.splice(rockIndices[1],1);
+            this.resourceCards.splice(rockIndices[2],1); 
+            
+
             this.ownedVertices.get(id).power = 2;
             let rowNumber = id.slice(0,id.indexOf("."));
             let newCity = document.getElementById(id);
@@ -155,9 +193,6 @@ export class player{
             console.log(dotYCoord)
             console.log(this.ownedVertices);
             console.log(newCity);
-
-        }
-        if(successCode == 0){
 
         }
     }

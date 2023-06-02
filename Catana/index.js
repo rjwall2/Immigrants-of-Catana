@@ -6,6 +6,8 @@ import { player } from "./player.js";
 
 let board = new gameBoard();   
 board.initializeBoard();    
+console.log(board.vertexMap);
+console.log(board.roadMap);
 
 
 // let test = board.vertexMap.get("1.2");
