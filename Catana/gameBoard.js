@@ -1,6 +1,7 @@
 import {gameTile} from "./gameTile.js";
 import { road } from "./road.js";
 import {vertex} from "./vertex.js";
+import { player } from "./player.js";
 
 
 export class gameBoard{
@@ -9,8 +10,14 @@ export class gameBoard{
     tileMap = new Map([]);
     vertexMap = new Map([]);
     roadMap = new Map([]);
+    currentPlayer;
 
     constructor(){}
+
+    setCurrentPlayer(player){
+        this.currentPlayer = player;
+    }
+
 
     static shuffle(array) { //function from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
         let currentIndex = array.length,  randomIndex;
@@ -199,6 +206,7 @@ export class gameBoard{
         newTriangle.setAttribute("stroke", "black");
         newTriangle.setAttribute("fill","white");
         newTriangle.setAttribute("stroke-width", "2.5");
+        newTriangle.addEventListener("click", ()=>{this.vertexClicked(id,this.currentPlayer,this);});
         svg.appendChild(newTriangle);
 
         this.vertexMap.set(id,new vertex(id));
@@ -218,6 +226,7 @@ export class gameBoard{
         newRectangle.setAttribute("stroke", "black");
         newRectangle.setAttribute("fill","white");
         newRectangle.setAttribute("stroke-width", "2.5");
+        newRectangle.addEventListener("click", ()=>{this.roadClicked(id,this.currentPlayer,this);});
         svg.appendChild(newRectangle);
 
         this.roadMap.set(id,new road(rowColumnOne,rowColumnTwo));
@@ -233,6 +242,7 @@ export class gameBoard{
         newRectangle.setAttribute("stroke", "black");
         newRectangle.setAttribute("fill","white");
         newRectangle.setAttribute("stroke-width", "2.5");
+        newRectangle.addEventListener("click", ()=>{this.roadClicked(id,this.currentPlayer,this);});
         svg.appendChild(newRectangle);
 
         this.roadMap.set(id,new road(rowColumnOne,rowColumnTwo));
@@ -258,6 +268,7 @@ export class gameBoard{
         newRectangle.setAttribute("stroke", "black");
         newRectangle.setAttribute("fill","white");
         newRectangle.setAttribute("stroke-width", "2.5");
+        newRectangle.addEventListener("click", ()=>{this.roadClicked(id,this.currentPlayer,this);});
         svg.appendChild(newRectangle);
         
         this.roadMap.set(id,new road(firstRowColumn,secondRowColumn));
@@ -405,6 +416,26 @@ export class gameBoard{
 
         this.connectVertexToTiles();
 
+    }
+
+    tileClicked(){
+
+    }
+
+    vertexClicked(id, currentPlayer, board){
+        if(currentPlayer.initialTurns==4 || currentPlayer.initialTurns==2) {
+            console.log(id);
+            this.currentPlayer.claimElement(id,currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns),board,currentPlayer.initialTurns);
+            console.log(currentPlayer.initialTurns);
+        }
+    }
+
+    roadClicked(id,currentPlayer,board){
+        if(currentPlayer.initialTurns==3 || currentPlayer.initialTurns==1) {
+            console.log(id);
+            this.currentPlayer.claimElement(id,currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns),board,currentPlayer.initialTurns);
+            console.log(currentPlayer);
+        }
     }
 }
 
