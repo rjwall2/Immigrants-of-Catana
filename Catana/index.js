@@ -2,10 +2,10 @@ import {gameBoard} from "./gameBoard.js";
 import { player } from "./player.js";
 import { game } from "./game.js";
 
-let newGame = new game("Ryan","Victoria");
+let newGame = new game("Ryan","Victoria","Bunny");
 newGame.initializeGame();
 
-// let board = new gameBoard();   
+// let board = new gameBoard();      
 // board.initializeBoard();    
 // console.log(board.vertexMap);
 // console.log(board.roadMap);

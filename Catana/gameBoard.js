@@ -426,7 +426,17 @@ export class gameBoard{
         if(currentPlayer.initialTurns==4 || currentPlayer.initialTurns==2) {
             console.log(id);
             this.currentPlayer.claimElement(id,currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns),board,currentPlayer.initialTurns);
-            console.log(currentPlayer.initialTurns);
+        }
+        if(currentPlayer.initialTurns==0){
+            if(currentPlayer.ownedVertices.has(id)){
+                let vertexTiles = currentPlayer.ownedVertices.get(id).tiles;
+                vertexTiles.forEach((value)=>{
+                    if(value.resource!="Desert"){
+                        currentPlayer.resourceCards.push(value);
+                    }
+                });
+                currentPlayer.initialTurns--;
+            }
         }
     }
 
@@ -434,10 +444,7 @@ export class gameBoard{
         if(currentPlayer.initialTurns==3 || currentPlayer.initialTurns==1) {
             console.log(id);
             this.currentPlayer.claimElement(id,currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns),board,currentPlayer.initialTurns);
-            console.log(currentPlayer);
         }
     }
 }
-
-
 

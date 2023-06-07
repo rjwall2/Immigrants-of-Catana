@@ -7,37 +7,56 @@ export class game{
     turnNumber;
     players = new Map([]);
     currentPlayer;
-    initialization = true
 
     constructor(...playerNames){
         playerNames.forEach((element,index)=>{this.players.set(index,new player(index,element))})
         this.board = new gameBoard();
-        this.board.initializeBoard();      
-    }
+        this.board.initializeBoard();
+        this.currentPlayer = this.players.get(0);
+     
+    } 
 
-    initializeGame(){
+    async initializeGame(){
         let initialRollNumbers = [];
         for(let i = 0; i<this.players.size;i++){ 
             initialRollNumbers.push(this.rollDice()); 
         }
-        const goFirst = initialRollNumbers.indexOf(Math.max(...initialRollNumbers));
+        const goFirst = initialRollNumbers.indexOf(Math.max(...initialRollNumbers)); 
         this.currentPlayer = this.players.get(goFirst);
         this.turnNumber = goFirst; 
-        this.board.setCurrentPlayer(this.currentPlayer);
+        this.board.setCurrentPlayer(this.currentPlayer);   
+
 
         for(let i = 0; i<this.players.size; i++){
-
-            while(this.currentPlayer.initialTurns != 2){////does not work, use some other async method
-
+            while(this.currentPlayer.initialTurns!=2){
+                await this.checkFirstInitialTurn(50);
             }
-            this.finishTurn
+            this.finishTurn(); 
         }
 
+        this.reverseOrderTurn();
+        for(let i = 0; i<this.players.size; i++){
+            while(this.currentPlayer.initialTurns!=0){
+                await this.checkFirstInitialTurn(50);
+            }
+            this.reverseOrderTurn(); 
+        }
+        this.finishTurn();
         
+        for(let i = 0; i<this.players.size; i++){
+            while(this.currentPlayer.initialTurns!=-1){
+                await this.checkFirstInitialTurn(50);
+            }
+            console.log(this.currentPlayer);
+            this.finishTurn(); 
+        }
+        
+        
+        
+    }
 
-        
-        // this.initialization = false;
-        // this.board.setInitializationStatus(this.initialization);
+    checkFirstInitialTurn(ms) {
+        return new Promise((resolve) => {setTimeout(resolve,ms)});
     }
 
     rollDice(){
@@ -48,12 +67,22 @@ export class game{
     }
 
     finishTurn(){
-        if(turnNumber == this.players.size -1){
+        if(this.turnNumber == this.players.size -1){
             this.turnNumber = 0;
         }else{
             this.turnNumber++;
         }
-        this.currentPlayer = players.get(this.turnNumber);
+        this.currentPlayer = this.players.get(this.turnNumber);
+        this.board.setCurrentPlayer(this.currentPlayer);
+    }
+
+    reverseOrderTurn(){
+        if(this.turnNumber == 0){
+            this.turnNumber = this.players.size -1;
+        }else{
+            this.turnNumber--;
+        }
+        this.currentPlayer = this.players.get(this.turnNumber);
         this.board.setCurrentPlayer(this.currentPlayer);
     }
 

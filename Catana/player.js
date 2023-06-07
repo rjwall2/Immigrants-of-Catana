@@ -141,7 +141,7 @@ export class player{
                 requiredResources = true;
             }
 
-            console.log(requiredResources);
+        
 
             if(connectingRoad && requiredResources){
                 return 1;
@@ -153,7 +153,7 @@ export class player{
     }    
 
     claimElement(id, successCode, board, initial){
-        console.log(successCode);
+        
 
         if(successCode == 1){ //road
 
