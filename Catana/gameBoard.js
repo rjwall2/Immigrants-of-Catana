@@ -95,8 +95,6 @@ export class gameBoard{
         newPolygon.setAttribute("fill", "white");
         newPolygon.setAttribute("stroke-width", "5");
         newPolygon.setAttribute("transform", "scale("+ svg.clientHeight/640+") translate(" + svg.clientWidth/50 + ")");
-        console.log(svg.clientHeight);
-        console.log(svg.clientWidth);
 
         // newPolygon.addEventListener("click",tileClicked);///////////////////////////////////////////////////////////uncomment this when done
         this.tileMap.set(id,this.tileArray[this.mapCounter]);
@@ -442,7 +440,7 @@ export class gameBoard{
                 let vertexTiles = currentPlayer.ownedVertices.get(id).tiles;
                 vertexTiles.forEach((value)=>{
                     if(value.resource!="Desert"){
-                        currentPlayer.resourceCards.push(value);
+                        currentPlayer.addResourceCard(value.resource);
                     }
                 });
                 currentPlayer.initialTurns--;

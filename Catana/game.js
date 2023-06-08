@@ -48,8 +48,10 @@ export class game{
         for(let i=0; i<this.players.size;i++){
             const playerFrame = document.createElement("div");
             playerFrame.setAttribute("id",this.currentPlayer.name);
-            playerFrame.setAttribute("style","height: 14.5%; width: 20%");
+            playerFrame.setAttribute("style","height: 14.5%; width: 40%; border: inset");
+            playerFrame.setAttribute("border","2px solid")
             const playerHeader = document.createElement("h2");
+            playerHeader.setAttribute("style", "font-family: Copperplate Gothic;margin-bottom: 0px;margin-top: 0px; color: "+this.currentPlayer.color)
             playerHeader.innerHTML = this.currentPlayer.name;
             playerFrame.append(playerHeader);
             document.body.append(playerFrame);

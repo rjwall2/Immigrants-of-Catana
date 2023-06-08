@@ -288,4 +288,29 @@ export class player{
 
         }
     }
+
+    addResourceCard(resourceString){
+        this.resourceCards.push(resourceString);
+        let cardIndex = this.resourceCards.length-1;
+
+        let newCard = document.createElement("button");
+        newCard.setAttribute("id",this.name+"."+cardIndex);
+        
+        console.log(resourceString);
+        console.log("burh")
+        if(resourceString=="Wood"){
+            newCard.setAttribute("style","background: url(./Images/Wood.png); background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%");
+            
+        }else if(resourceString=="Wheat"){
+            newCard.setAttribute("style","background: url(./Images/Wheat.jpg);background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%")
+        }else if(resourceString=="Sheep"){
+            newCard.setAttribute("style","background: url(./Images/Sheep.png);background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%")
+        }else  if(resourceString=="Brick"){
+            newCard.setAttribute("style","background: url(./Images/Brick.jpg);background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%")
+        }else if(resourceString=="Rock"){
+            newCard.setAttribute("style","background: url(./Images/Rock.jpg);background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%")
+        }
+        document.getElementById(this.name).append(newCard);
+
+    }
 }
