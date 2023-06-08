@@ -2,7 +2,7 @@ import {gameBoard} from "./gameBoard.js";
 import { player } from "./player.js";
 import { game } from "./game.js";
 
-let newGame = new game("Ryan","Victoria","Bunny");
+let newGame = new game("Ryan","Victoria","Bunny","Mr.Cuddles");
 newGame.initializeGame();
 
 // let board = new gameBoard();      

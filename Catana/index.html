@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <svg id = "board" height = "1000" width = "1000">
+    <svg id = "board" height = "80%" width = "60%">
         <defs>
             <pattern id="Sheep" height="100%" width="100%" patternContentUnits="objectBoundingBox">
                 <image height="1" width="1" preserveAspectRatio="none" href="./Images/Sheep.png" />
@@ -30,6 +30,12 @@
             </pattern>
         </defs>
     </svg>
+    <p id = "CurrentTurnName">hi</p>
+    <p id="GameInfo">You are cool</p>
+    <p id="TurnOrder"></p>
+    <button id = "endTurnButton" >End Turn</button>
+    <button id = "tradeButton" >Trade</button>
+    <button id = "rollDiceButton">Roll Dice</button>
     <script type='module' src="index.js"></script>
 </body>
 </html>

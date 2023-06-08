@@ -7,6 +7,8 @@ export class game{
     turnNumber;
     players = new Map([]);
     currentPlayer;
+    outputText = document.getElementById("GameInfo");
+    currentPlayerText= document.getElementById("CurrentTurnName");
 
     constructor(...playerNames){
         playerNames.forEach((element,index)=>{this.players.set(index,new player(index,element))})
@@ -24,7 +26,37 @@ export class game{
         const goFirst = initialRollNumbers.indexOf(Math.max(...initialRollNumbers)); 
         this.currentPlayer = this.players.get(goFirst);
         this.turnNumber = goFirst; 
-        this.board.setCurrentPlayer(this.currentPlayer);   
+        this.board.setCurrentPlayer(this.currentPlayer);
+        this.currentPlayerText.innerHTML = "It is currently " + this.currentPlayer.name+ "'s turn";
+        let turnOrder = [];
+        for(let i=0; i<this.players.size;i++){
+            turnOrder.push(this.currentPlayer.name);
+            this.finishTurn();
+        }
+        console.log(turnOrder);
+        console.log(this.currentPlayer);
+
+        let turnOrderString = "The turn order will be: ";
+        for(let i=0; i<this.players.size;i++){
+            turnOrderString+=turnOrder[i];
+            turnOrderString+=" 🡒 "
+        }
+        turnOrderString = turnOrderString.slice(0,-3);
+        turnOrderString+="↺";
+        document.getElementById("TurnOrder").innerHTML=turnOrderString;
+
+        for(let i=0; i<this.players.size;i++){
+            const playerFrame = document.createElement("div");
+            playerFrame.setAttribute("id",this.currentPlayer.name);
+            playerFrame.setAttribute("style","height: 14.5%; width: 20%");
+            const playerHeader = document.createElement("h2");
+            playerHeader.innerHTML = this.currentPlayer.name;
+            playerFrame.append(playerHeader);
+            document.body.append(playerFrame);
+            this.finishTurn();
+
+        }
+
 
 
         for(let i = 0; i<this.players.size; i++){
@@ -74,6 +106,7 @@ export class game{
         }
         this.currentPlayer = this.players.get(this.turnNumber);
         this.board.setCurrentPlayer(this.currentPlayer);
+        this.currentPlayerText.innerHTML = "It is currently " + this.currentPlayer.name+ "'s turn";
     }
 
     reverseOrderTurn(){
@@ -84,6 +117,7 @@ export class game{
         }
         this.currentPlayer = this.players.get(this.turnNumber);
         this.board.setCurrentPlayer(this.currentPlayer);
+        this.currentPlayerText.innerHTML = "It is currently " + this.currentPlayer.name+ "'s turn";
     }
 
     collectResources(numberRolled){

@@ -10,6 +10,7 @@ export class gameBoard{
     tileMap = new Map([]);
     vertexMap = new Map([]);
     roadMap = new Map([]);
+    claimedVerticesMap = new Map([]);
     currentPlayer;
 
     constructor(){}
@@ -72,7 +73,7 @@ export class gameBoard{
     }
 
     createTileSVG(row, column){ //0 based index, creates the visual representation of a gametile
-        let originalXCoordinates = [75,127.5,127.5,75,22.5,22.5];
+        let originalXCoordinates = [65,117.5,117.5,65,12.5,12.5];
         let originalYCoordinates = [37.5,67.5,127.5,157.5,127.5,67.5];
         if(row%2 !=0){
             originalXCoordinates.forEach((currentElement,index) => {originalXCoordinates[index]=currentElement+62.5});
@@ -93,6 +94,9 @@ export class gameBoard{
         newPolygon.setAttribute("stroke", "black");
         newPolygon.setAttribute("fill", "white");
         newPolygon.setAttribute("stroke-width", "5");
+        newPolygon.setAttribute("transform", "scale("+ svg.clientHeight/640+") translate(" + svg.clientWidth/50 + ")");
+        console.log(svg.clientHeight);
+        console.log(svg.clientWidth);
 
         // newPolygon.addEventListener("click",tileClicked);///////////////////////////////////////////////////////////uncomment this when done
         this.tileMap.set(id,this.tileArray[this.mapCounter]);
@@ -111,6 +115,7 @@ export class gameBoard{
         newCircle.setAttribute("stroke", "black");
         newCircle.setAttribute("fill", "white");
         newCircle.setAttribute("stroke-width", "2");
+        newCircle.setAttribute("transform", "scale("+ svg.clientHeight/640+") translate(" + svg.clientWidth/50 + ")");
         // newCircle.addEventListener("click",tileClicked);///////////////////////////////////////////////////////////uncomment this when done
 
         //add number to circle
@@ -158,6 +163,7 @@ export class gameBoard{
         newText.setAttribute("font-size","2.2em");
         newText.setAttribute("fill",numberColor);
         newText.innerHTML = this.tileArray[this.mapCounter].number;
+        newText.setAttribute("transform", "scale("+ svg.clientHeight/640+")translate(" + svg.clientWidth/50 + ")");
         // newText.addEventListener("click",tileClicked);///////////////////////////////////////////////////////////uncomment this when done
 
         svg.appendChild(newPolygon);
@@ -173,7 +179,7 @@ export class gameBoard{
         const fullHorizontal = 125;
         const halfHorizontal = 62.5;
 
-        const originalXCoordinates = 137.5;
+        const originalXCoordinates = 127.5;
         const originalYCoordinates = 23.5;
 
         let newXCoordinates = originalXCoordinates + (fullHorizontal*(column/2));
@@ -207,6 +213,7 @@ export class gameBoard{
         newTriangle.setAttribute("fill","white");
         newTriangle.setAttribute("stroke-width", "2.5");
         newTriangle.addEventListener("click", ()=>{this.vertexClicked(id,this.currentPlayer,this);});
+        newTriangle.setAttribute("transform", "scale("+ svg.clientHeight/640+")translate(" + svg.clientWidth/50 + ")");
         svg.appendChild(newTriangle);
 
         this.vertexMap.set(id,new vertex(id));
@@ -227,6 +234,7 @@ export class gameBoard{
         newRectangle.setAttribute("fill","white");
         newRectangle.setAttribute("stroke-width", "2.5");
         newRectangle.addEventListener("click", ()=>{this.roadClicked(id,this.currentPlayer,this);});
+        newRectangle.setAttribute("transform", "scale("+ svg.clientHeight/640+")translate(" + svg.clientWidth/50 + ")");
         svg.appendChild(newRectangle);
 
         this.roadMap.set(id,new road(rowColumnOne,rowColumnTwo));
@@ -243,6 +251,7 @@ export class gameBoard{
         newRectangle.setAttribute("fill","white");
         newRectangle.setAttribute("stroke-width", "2.5");
         newRectangle.addEventListener("click", ()=>{this.roadClicked(id,this.currentPlayer,this);});
+        newRectangle.setAttribute("transform", "scale("+ svg.clientHeight/640+")translate(" + svg.clientWidth/50 + ")");
         svg.appendChild(newRectangle);
 
         this.roadMap.set(id,new road(rowColumnOne,rowColumnTwo));
@@ -269,6 +278,7 @@ export class gameBoard{
         newRectangle.setAttribute("fill","white");
         newRectangle.setAttribute("stroke-width", "2.5");
         newRectangle.addEventListener("click", ()=>{this.roadClicked(id,this.currentPlayer,this);});
+        newRectangle.setAttribute("transform", "scale("+ svg.clientHeight/640+")translate(" + svg.clientWidth/50 + ")");
         svg.appendChild(newRectangle);
         
         this.roadMap.set(id,new road(firstRowColumn,secondRowColumn));

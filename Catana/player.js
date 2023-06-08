@@ -5,16 +5,16 @@ export class player{
     initialTurns = 4;
     numberOfVictoryPoints = 0;
     resourceCards = [];
-    ownedVertices = new Map([]);
+    ownedVertices = new Map([]); 
     ownedRoads = new Map([]);
 
     constructor (playerNumber, name){
         this.playerNumber = playerNumber;
-        this.name = name;
+        this.name = name; 
         if(playerNumber==0){
             this.color = "red";
         }else if(playerNumber==1){
-            this.color="blue";
+            this.color="deepskyblue";
         }else if(playerNumber==2){
             this.color="green";
         }else if( playerNumber==3){
@@ -59,14 +59,10 @@ export class player{
 
                 if(wheatIndices.length ==2 && rockIndices.length == 3){
                     requiredResources = true;
-                    // this.resourceCards.splice(wheatIndices[0],1);
-                    // this.resourceCards.splice(wheatIndices[1],1);
-                    // this.resourceCards.splice(rockIndices[0],1);
-                    // this.resourceCards.splice(rockIndices[1],1);
-                    // this.resourceCards.splice(rockIndices[2],1);
                 }
+                console.log("Cannot build city during initial turns");
 
-                if(connectingRoad && requiredResources){
+                if(connectingRoad && requiredResources){ 
                     return 3;
                 }
 
@@ -77,6 +73,25 @@ export class player{
                     return 0;
                 }
 
+                let rowNumber = idOfClick.slice(0,idOfClick.indexOf("."));
+                let columnNumber = idOfClick.slice(idOfClick.indexOf(".")+1);
+
+                console.log(board.claimedVerticesMap);
+                console.log(""+(+rowNumber-1)+"."+columnNumber);
+                console.log(""+(+rowNumber+1)+"."+(columnNumber-1)); 
+
+                if(rowNumber%2 == 0){ //even 
+                    if(board.claimedVerticesMap.has(""+(+rowNumber-1)+"."+columnNumber)||board.claimedVerticesMap.has(""+(+rowNumber+1)+"."+(+columnNumber-1))||board.claimedVerticesMap.has(""+(+rowNumber+1)+"."+(+columnNumber+1))){
+                        console.log("Settlements must be at least two roads apart");
+                        return 0;
+                    }
+                }else{ //odd
+                    if(board.claimedVerticesMap.has(""+(+rowNumber+1)+"."+columnNumber)||board.claimedVerticesMap.has(""+(+rowNumber-1)+"."+(+columnNumber-1))||board.claimedVerticesMap.has(""+(+rowNumber-1)+"."+(+columnNumber+1))){
+                        console.log("Settlements must be at least two roads apart");
+                        return 0;
+                    } 
+                }
+
                 this.ownedRoads.forEach((value)=>{
                     if(idOfClick == value.vertex1 || idOfClick == value.vertex2){
                         connectingRoad = true;
@@ -85,8 +100,7 @@ export class player{
 
                 if(initial){
                     connectingRoad = true;
-                    
-                    
+                   
                 }
 
                 
@@ -101,7 +115,7 @@ export class player{
                 }
 
 
-                if((connectingRoad && requiredResources)||initial){
+                if((connectingRoad && requiredResources)||initial>0){
                     return 2;
                 }
             }
@@ -111,14 +125,17 @@ export class player{
         } else{ //road clicked
 
             if(!board.roadMap.has(idOfClick)){
-                console.log("This element is already owned!");
-                return;
+                console.log("This element is already owned!"); 
+                return 0;
             }
+
+
 
             let end1 = idOfClick.slice(0,colonIndex);
             let end2 = idOfClick.slice(colonIndex+1);
 
-            
+
+
             this.ownedRoads.forEach((value)=>{
                 if(end1 == value.vertex1 || end2 == value.vertex2 ||end2 == value.vertex1 || end1 == value.vertex2){
                     connectingRoad = true;
@@ -133,11 +150,23 @@ export class player{
                 
             })
 
+            if(initial==1){
+                const currentVertices = this.ownedVertices.entries();
+                currentVertices.next();
+                let valid = currentVertices.next().value[1].position;
+                if(end1 == valid || end2 == valid){
+                    connectingRoad=true;
+                }else{
+                    console.log("Must build adjacent to latest placed settlement")
+                    connectingRoad=false;
+                }
+            }
+
 
             const woodIndex = this.resourceCards.indexOf("Wood");
             const brickIndex = this.resourceCards.indexOf("Brick");
 
-            if(woodIndex!=-1||brickIndex!=-1|| initial){
+            if(woodIndex!=-1||brickIndex!=-1|| initial>0){
                 requiredResources = true;
             }
 
@@ -175,7 +204,7 @@ export class player{
 
 
 
-            if(initial==false){
+            if(initial==false){ 
                 const woodIndex = this.resourceCards.indexOf("Wood");
                 const brickIndex = this.resourceCards.indexOf("Brick");
                 const sheepIndex = this.resourceCards.indexOf("Sheep");
@@ -190,6 +219,7 @@ export class player{
             }
 
             this.ownedVertices.set(id,board.vertexMap.get(id));
+            board.claimedVerticesMap.set(id,board.vertexMap.get(id));
             board.vertexMap.delete(id);
             document.getElementById(id).setAttribute("fill",this.color);
             this.numberOfVictoryPoints++;
