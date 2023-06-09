@@ -15,6 +15,7 @@ export class game{
         this.board = new gameBoard();
         this.board.initializeBoard();
         this.currentPlayer = this.players.get(0);
+        
      
     } 
 
@@ -33,8 +34,6 @@ export class game{
             turnOrder.push(this.currentPlayer.name);
             this.finishTurn();
         }
-        console.log(turnOrder);
-        console.log(this.currentPlayer);
 
         let turnOrderString = "The turn order will be: ";
         for(let i=0; i<this.players.size;i++){
@@ -81,12 +80,10 @@ export class game{
             while(this.currentPlayer.initialTurns!=-1){
                 await this.checkFirstInitialTurn(50);
             }
-            console.log(this.currentPlayer);
             this.finishTurn(); 
         }
         
-        
-        
+        this.linkButtons();
     }
 
     checkFirstInitialTurn(ms) {
@@ -101,6 +98,8 @@ export class game{
     }
 
     finishTurn(){
+        console.log(this.players.size);
+
         if(this.turnNumber == this.players.size -1){
             this.turnNumber = 0;
         }else{
@@ -108,6 +107,7 @@ export class game{
         }
         this.currentPlayer = this.players.get(this.turnNumber);
         this.board.setCurrentPlayer(this.currentPlayer);
+        
         this.currentPlayerText.innerHTML = "It is currently " + this.currentPlayer.name+ "'s turn";
     }
 
@@ -128,6 +128,20 @@ export class game{
 
     vertexClicked(){
 
+    }
+
+    startTrade(){
+
+    }
+
+    linkButtons(){
+        let endTurnButton = document.getElementById("endTurnButton");
+        let tradeButton = document.getElementById("tradeButton");
+        let rollDiceButton = document.getElementById("rollDiceButton");
+
+        endTurnButton.addEventListener("click",this.finishTurn.bind(this)); //bind ensures that the button knows that the specific object to refer to ex the attributes is this specific game
+        tradeButton.addEventListener("click", this.startTrade.bind(this));
+        rollDiceButton.addEventListener("click", this.rollDice.bind(this));
     }
 
 }

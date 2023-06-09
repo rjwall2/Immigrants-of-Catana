@@ -453,6 +453,10 @@ export class gameBoard{
             console.log(id);
             this.currentPlayer.claimElement(id,currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns),board,currentPlayer.initialTurns);
         }
+        if(currentPlayer.initialTurns<0){
+            let successCode = currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns);
+            this.currentPlayer.claimElement(id,successCode,board,currentPlayer.initialTurns);
+        }
     }
 }
 

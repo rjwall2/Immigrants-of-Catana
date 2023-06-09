@@ -110,7 +110,7 @@ export class player{
                 const sheepIndex = this.resourceCards.indexOf("Sheep");
                 const wheatIndex = this.resourceCards.indexOf("Wheat");
 
-                if(woodIndex!=-1||brickIndex!=-1||sheepIndex!=-1||wheatIndex!=-1|| initial == true){
+                if((woodIndex!=-1 && brickIndex!=-1 && sheepIndex!=-1 && wheatIndex!=-1)|| initial == true){
                     requiredResources = true;
                 }
 
@@ -163,14 +163,14 @@ export class player{
             }
 
 
-            const woodIndex = this.resourceCards.indexOf("Wood");
-            const brickIndex = this.resourceCards.indexOf("Brick");
+            let woodIndex = this.resourceCards.indexOf("Wood");
+            let brickIndex = this.resourceCards.indexOf("Brick");
+            console.log("WoodIndex: "+woodIndex);
+            console.log("BrickIndex: "+brickIndex);
 
-            if(woodIndex!=-1||brickIndex!=-1|| initial>0){
+            if((woodIndex!=-1 && brickIndex!=-1)|| initial>0){
                 requiredResources = true;
             }
-
-        
 
             if(connectingRoad && requiredResources){
                 return 1;
@@ -183,15 +183,17 @@ export class player{
 
     claimElement(id, successCode, board, initial){
         
-
+        console.log("SuccessCode was: "+successCode);
         if(successCode == 1){ //road
 
-            if(initial==false){
+            if(initial<0){
+
                 const woodIndex = this.resourceCards.indexOf("Wood");
                 const brickIndex = this.resourceCards.indexOf("Brick");
 
-                this.resourceCards.splice(woodIndex,1);
-                this.resourceCards.splice(brickIndex,1);
+                this.removeResourceCard(woodIndex);
+                this.removeResourceCard(brickIndex);
+
             }else{
                 this.initialTurns--;
             }
@@ -204,7 +206,7 @@ export class player{
 
 
 
-            if(initial==false){ 
+            if(initial<0){ 
                 const woodIndex = this.resourceCards.indexOf("Wood");
                 const brickIndex = this.resourceCards.indexOf("Brick");
                 const sheepIndex = this.resourceCards.indexOf("Sheep");
@@ -296,8 +298,6 @@ export class player{
         let newCard = document.createElement("button");
         newCard.setAttribute("id",this.name+"."+cardIndex);
         
-        console.log(resourceString);
-        console.log("burh")
         if(resourceString=="Wood"){
             newCard.setAttribute("style","background: url(./Images/Wood.png); background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%");
             
@@ -311,6 +311,15 @@ export class player{
             newCard.setAttribute("style","background: url(./Images/Rock.jpg);background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%")
         }
         document.getElementById(this.name).append(newCard);
+
+    }
+    removeResourceCard(resourceIndex){
+        let playerDiv = document.getElementById(this.name);
+        let cardID = ""+this.name+"."+resourceIndex;
+
+        this.resourceCards.splice(resourceIndex,1);
+        playerDiv.removeChild(document.getElementById(cardID));
+
 
     }
 }
