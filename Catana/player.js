@@ -60,7 +60,6 @@ export class player{
                 if(wheatIndices.length ==2 && rockIndices.length == 3){
                     requiredResources = true;
                 }
-                console.log("Cannot build city during initial turns");
 
                 if(connectingRoad && requiredResources){ 
                     return 3;
@@ -98,7 +97,7 @@ export class player{
                     }
                 })
 
-                if(initial){
+                if(initial>0){
                     connectingRoad = true;
                    
                 }
@@ -110,7 +109,7 @@ export class player{
                 const sheepIndex = this.resourceCards.indexOf("Sheep");
                 const wheatIndex = this.resourceCards.indexOf("Wheat");
 
-                if((woodIndex!=-1 && brickIndex!=-1 && sheepIndex!=-1 && wheatIndex!=-1)|| initial == true){
+                if((woodIndex!=-1 && brickIndex!=-1 && sheepIndex!=-1 && wheatIndex!=-1)|| initial > 0){
                     requiredResources = true;
                 }
 
@@ -191,8 +190,8 @@ export class player{
                 const woodIndex = this.resourceCards.indexOf("Wood");
                 const brickIndex = this.resourceCards.indexOf("Brick");
 
-                this.removeResourceCard(woodIndex);
-                this.removeResourceCard(brickIndex);
+                this.removeResourceCard(woodIndex,"Wood");
+                this.removeResourceCard(brickIndex,"Brick");
 
             }else{
                 this.initialTurns--;
@@ -212,10 +211,20 @@ export class player{
                 const sheepIndex = this.resourceCards.indexOf("Sheep");
                 const wheatIndex = this.resourceCards.indexOf("Wheat");
 
-                this.resourceCards.splice(woodIndex,1);
-                this.resourceCards.splice(brickIndex,1);
-                this.resourceCards.splice(sheepIndex,1);
-                this.resourceCards.splice(wheatIndex,1);
+                console.log("woodIndex: "+woodIndex);
+                console.log("brickIndex: "+brickIndex);
+                console.log("sheepIndex: "+sheepIndex);
+                console.log("wheatIndex: "+wheatIndex);
+                console.log(this.resourceCards);
+
+                this.removeResourceCard(woodIndex,"Wood");
+                this.removeResourceCard(brickIndex,"Brick");
+                this.removeResourceCard(sheepIndex,"Sheep");
+                this.removeResourceCard(wheatIndex,"Wheat");
+                // this.resourceCards.splice(woodIndex,1);
+                // this.resourceCards.splice(brickIndex,1);
+                // this.resourceCards.splice(sheepIndex,1);
+                // this.resourceCards.splice(wheatIndex,1);
             }else{
                 this.initialTurns--;
             }
@@ -249,11 +258,17 @@ export class player{
                 }
             })
 
-            this.resourceCards.splice(wheatIndices[0],1);
-            this.resourceCards.splice(wheatIndices[1],1);
-            this.resourceCards.splice(rockIndices[0],1);
-            this.resourceCards.splice(rockIndices[1],1);
-            this.resourceCards.splice(rockIndices[2],1); 
+            this.removeResourceCard(wheatIndices[0],"Wheat");
+            this.removeResourceCard(wheatIndices[1],"Wheat");
+            this.removeResourceCard(rockIndices[0],"Rock");
+            this.removeResourceCard(rockIndices[1],"Rock");
+            this.removeResourceCard(rockIndices[2],"Rock");
+
+            // this.resourceCards.splice(wheatIndices[0],1);
+            // this.resourceCards.splice(wheatIndices[1],1);
+            // this.resourceCards.splice(rockIndices[0],1);
+            // this.resourceCards.splice(rockIndices[1],1);
+            // this.resourceCards.splice(rockIndices[2],1); 
             
 
             this.ownedVertices.get(id).power = 2;
@@ -278,6 +293,7 @@ export class player{
             newText.setAttribute("fill","black");
             newText.setAttribute("font-size","2em");
             newText.setAttribute("text-anchor","middle");
+            newText.setAttribute("transform", "scale("+ svg.clientHeight/640+")translate(" + svg.clientWidth/50 + ")")
             newText.innerHTML = ".";
             svg.append(newText);
             // newText.addEventListener("click",tileClicked);////////////
@@ -293,14 +309,14 @@ export class player{
 
     addResourceCard(resourceString){
         this.resourceCards.push(resourceString);
-        let cardIndex = this.resourceCards.length-1;
+        // let cardIndex = this.resourceCards.length-1;
 
         let newCard = document.createElement("button");
-        newCard.setAttribute("id",this.name+"."+cardIndex);
+        // newCard.setAttribute("id",this.name+"."+cardIndex);//FLAWED SYSTEM AS INDEX CHANGES
+        newCard.setAttribute("class",resourceString);
         
         if(resourceString=="Wood"){
-            newCard.setAttribute("style","background: url(./Images/Wood.png); background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%");
-            
+            newCard.setAttribute("style","background: url(./Images/Wood.png); background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%");         
         }else if(resourceString=="Wheat"){
             newCard.setAttribute("style","background: url(./Images/Wheat.jpg);background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%")
         }else if(resourceString=="Sheep"){
@@ -313,12 +329,20 @@ export class player{
         document.getElementById(this.name).append(newCard);
 
     }
-    removeResourceCard(resourceIndex){
+    removeResourceCard(resourceIndex,resourceString){
         let playerDiv = document.getElementById(this.name);
-        let cardID = ""+this.name+"."+resourceIndex;
+        // let cardID = ""+this.name+"."+resourceIndex;
+        
+        // playerDiv.removeChild(document.getElementById(cardID));
 
-        this.resourceCards.splice(resourceIndex,1);
-        playerDiv.removeChild(document.getElementById(cardID));
+        let playerCardElements = playerDiv.children;
+        for(let i =0; i<playerCardElements.length;i++){
+            if(playerCardElements[i].classList.contains(resourceString)){
+                playerDiv.removeChild(playerCardElements[i]);
+                this.resourceCards.splice(resourceIndex,1);
+                return;
+            }
+        }
 
 
     }

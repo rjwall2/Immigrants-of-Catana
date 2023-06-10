@@ -22,7 +22,10 @@ export class game{
     async initializeGame(){
         let initialRollNumbers = [];
         for(let i = 0; i<this.players.size;i++){ 
-            initialRollNumbers.push(this.rollDice()); 
+            let dice1 = Math.floor(Math.random() * 6)+1;
+            let dice2 = Math.floor(Math.random() * 6)+1;
+            let diceNumber = dice1 + dice2;
+            initialRollNumbers.push(diceNumber); 
         }
         const goFirst = initialRollNumbers.indexOf(Math.max(...initialRollNumbers)); 
         this.currentPlayer = this.players.get(goFirst);
@@ -84,6 +87,7 @@ export class game{
         }
         
         this.linkButtons();
+        document.getElementById("endTurnButton").disabled = true;
     }
 
     checkFirstInitialTurn(ms) {
@@ -91,14 +95,17 @@ export class game{
     }
 
     rollDice(){
+        
         let dice1 = Math.floor(Math.random() * 6)+1;
         let dice2 = Math.floor(Math.random() * 6)+1;
         this.diceNumber = dice1+dice2;
+        this.collectResources(this.diceNumber);
+        document.getElementById("rollDiceButton").disabled = true;
         return this.diceNumber;
     }
 
     finishTurn(){
-        console.log(this.players.size);
+        
 
         if(this.turnNumber == this.players.size -1){
             this.turnNumber = 0;
@@ -109,6 +116,7 @@ export class game{
         this.board.setCurrentPlayer(this.currentPlayer);
         
         this.currentPlayerText.innerHTML = "It is currently " + this.currentPlayer.name+ "'s turn";
+        
     }
 
     reverseOrderTurn(){
@@ -123,6 +131,29 @@ export class game{
     }
 
     collectResources(numberRolled){
+        console.log("Number rolled: "+numberRolled);
+
+        if(numberRolled==7){
+            this.sevenProtocol();
+        }else{
+            this.players.forEach((player)=>{ //for every player
+                let playerVertices = player.ownedVertices;
+                playerVertices.forEach((vertex)=>{ //for every vertex of a player
+                    let power = vertex.power;
+                    let vertexTiles = vertex.tiles;
+                    vertexTiles.forEach((tile)=>{ //for every tile of a vertex
+                        if(tile.number == numberRolled && tile.robberStatus==false){
+                            for(let i = 0; i<power;i++){
+                                player.addResourceCard(tile.resource);
+                            }
+                        }
+                    })
+                })
+            })
+        }
+    }
+
+    sevenProtocol(){
 
     }
 
@@ -131,6 +162,7 @@ export class game{
     }
 
     startTrade(){
+        console.log("Should not run yet3")
 
     }
 
@@ -139,9 +171,20 @@ export class game{
         let tradeButton = document.getElementById("tradeButton");
         let rollDiceButton = document.getElementById("rollDiceButton");
 
-        endTurnButton.addEventListener("click",this.finishTurn.bind(this)); //bind ensures that the button knows that the specific object to refer to ex the attributes is this specific game
+        //bind ensures that the button knows that the specific object to refer to ex the attributes is this specific game
+        endTurnButton.addEventListener("click",()=>{
+            let finishThisTurn = this.finishTurn.bind(this);
+            finishThisTurn();
+            document.getElementById("endTurnButton").disabled = true;
+            document.getElementById("rollDiceButton").disabled = false;}); 
+        
         tradeButton.addEventListener("click", this.startTrade.bind(this));
-        rollDiceButton.addEventListener("click", this.rollDice.bind(this));
+        
+        rollDiceButton.addEventListener("click",()=>{
+            let rollThisDice = this.rollDice.bind(this);
+            rollThisDice();
+            document.getElementById("rollDiceButton").disabled = true;
+            document.getElementById("endTurnButton").disabled = false;});
     }
 
 }

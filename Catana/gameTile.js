@@ -7,7 +7,7 @@ export class gameTile{
     constructor(resource, number, robber){
         this.resource = resource;
         this.number = number;
-        this.robber = robber;
+        this.robberStatus = robber;
     }
 
     setPosition(position){
