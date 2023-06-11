@@ -65,7 +65,7 @@ export class game{
 
         for(let i = 0; i<this.players.size; i++){
             while(this.currentPlayer.initialTurns!=2){
-                await this.checkFirstInitialTurn(50);
+                await this.waitForPlayer(50);
             }
             this.finishTurn(); 
         }
@@ -73,7 +73,7 @@ export class game{
         this.reverseOrderTurn();
         for(let i = 0; i<this.players.size; i++){
             while(this.currentPlayer.initialTurns!=0){
-                await this.checkFirstInitialTurn(50);
+                await this.waitForPlayer(50);
             }
             this.reverseOrderTurn(); 
         }
@@ -81,16 +81,17 @@ export class game{
         
         for(let i = 0; i<this.players.size; i++){
             while(this.currentPlayer.initialTurns!=-1){
-                await this.checkFirstInitialTurn(50);
+                await this.waitForPlayer(50);
             }
             this.finishTurn(); 
         }
         
         this.linkButtons();
         document.getElementById("endTurnButton").disabled = true;
+        document.getElementById("tradeButton").disabled = true;
     }
 
-    checkFirstInitialTurn(ms) {
+    waitForPlayer(ms) {
         return new Promise((resolve) => {setTimeout(resolve,ms)});
     }
 
@@ -153,8 +154,22 @@ export class game{
         }
     }
 
-    sevenProtocol(){
-
+    async sevenProtocol(){
+        document.getElementById("endTurnButton").disabled = true;
+        document.getElementById("tradeButton").disabled = true;
+        console.log(document.getElementById("endTurnButton").disabled)
+        this.players.forEach((player)=>{player.robPlayer();})
+        this.currentPlayer.movingRobber=true;
+        this.currentPlayer.stealing=true;
+        while(this.currentPlayer.movingRobber){
+            await this.waitForPlayer(50);
+        }
+        while(this.currentPlayer.stealing){
+            await this.waitForPlayer(50);
+        }
+        document.getElementById("endTurnButton").disabled = false;
+        document.getElementById("tradeButton").disabled = false;
+        //keep writing here 
     }
 
     vertexClicked(){
@@ -176,15 +191,18 @@ export class game{
             let finishThisTurn = this.finishTurn.bind(this);
             finishThisTurn();
             document.getElementById("endTurnButton").disabled = true;
+            document.getElementById("tradeButton").disabled = true;
             document.getElementById("rollDiceButton").disabled = false;}); 
         
         tradeButton.addEventListener("click", this.startTrade.bind(this));
         
         rollDiceButton.addEventListener("click",()=>{
+            document.getElementById("rollDiceButton").disabled = true;
+            document.getElementById("tradeButton").disabled = false;
+            document.getElementById("endTurnButton").disabled = false;
             let rollThisDice = this.rollDice.bind(this);
             rollThisDice();
-            document.getElementById("rollDiceButton").disabled = true;
-            document.getElementById("endTurnButton").disabled = false;});
+        });
     }
 
 }

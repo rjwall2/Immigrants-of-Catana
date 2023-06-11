@@ -11,6 +11,7 @@ export class gameBoard{
     vertexMap = new Map([]);
     roadMap = new Map([]);
     claimedVerticesMap = new Map([]);
+    vertexOwnersMap = new Map([]);
     currentPlayer;
 
     constructor(){}
@@ -96,7 +97,7 @@ export class gameBoard{
         newPolygon.setAttribute("stroke-width", "5");
         newPolygon.setAttribute("transform", "scale("+ svg.clientHeight/640+") translate(" + svg.clientWidth/50 + ")");
 
-        // newPolygon.addEventListener("click",tileClicked);///////////////////////////////////////////////////////////uncomment this when done
+        newPolygon.addEventListener("click",()=>{this.tileClicked(id,this.currentPlayer,this)});
         this.tileMap.set(id,this.tileArray[this.mapCounter]);
         this.tileArray[this.mapCounter].setPosition(id);       
 
@@ -106,7 +107,7 @@ export class gameBoard{
 
         //add number value to tile
         const newCircle = document.createElementNS(xmlns, "circle");
-        newCircle.setAttribute("id", id);
+        // newCircle.setAttribute("id", id);
         newCircle.setAttribute("cx",originalXCoordinates[3])
         newCircle.setAttribute("cy",originalYCoordinates[2])
         newCircle.setAttribute("r","20")
@@ -114,7 +115,7 @@ export class gameBoard{
         newCircle.setAttribute("fill", "white");
         newCircle.setAttribute("stroke-width", "2");
         newCircle.setAttribute("transform", "scale("+ svg.clientHeight/640+") translate(" + svg.clientWidth/50 + ")");
-        // newCircle.addEventListener("click",tileClicked);///////////////////////////////////////////////////////////uncomment this when done
+        newCircle.addEventListener("click",()=>{this.tileClicked(id,this.currentPlayer,this)});
 
         //add number to circle
         let numberColor = null;
@@ -153,7 +154,7 @@ export class gameBoard{
                 numberColor="White"
         }
         const newText = document.createElementNS(xmlns,"text");      
-        newText.setAttribute("id", id);
+        // newText.setAttribute("id", id);
         newText.setAttribute("x",originalXCoordinates[3]);
         newText.setAttribute("y",originalYCoordinates[2]+9);
         newText.setAttribute("fill","black");
@@ -162,7 +163,7 @@ export class gameBoard{
         newText.setAttribute("fill",numberColor);
         newText.innerHTML = this.tileArray[this.mapCounter].number;
         newText.setAttribute("transform", "scale("+ svg.clientHeight/640+")translate(" + svg.clientWidth/50 + ")");
-        // newText.addEventListener("click",tileClicked);///////////////////////////////////////////////////////////uncomment this when done
+        newText.addEventListener("click",()=>{this.tileClicked(id,this.currentPlayer,this)});
 
         svg.appendChild(newPolygon);
         svg.append(newCircle);
@@ -426,14 +427,55 @@ export class gameBoard{
 
     }
 
-    tileClicked(){
+    tileClicked(id,currentPlayer,board){
+        if(currentPlayer.movingRobber){
+            board.tileMap.forEach((value)=>{
+                if(value.robberStatus=true){
+                    value.robberStatus=false;
+                    document.getElementById(value.position).removeAttribute("filter");        
+                }
+            })
+            board.tileMap.get(id).robberStatus=true;
+            document.getElementById(id).setAttribute("filter", "url(#robbed)")
+            board.currentPlayer.movingRobber=false;
+
+
+            let resourcesToSteal = false;
+            board.claimedVerticesMap.forEach((vertex)=>{
+                let validVertex = false;
+                vertex.tiles.forEach((tile)=>{
+                    if(tile.robberStatus==true){
+                        validVertex=true
+                    }
+                    if(validVertex){
+                        let potentialVictim = board.vertexOwnersMap.get(vertex.position);
+                        if(potentialVictim.resourceCards.length!=0 && !(potentialVictim===currentPlayer)){
+                            resourcesToSteal=true;
+                        }
+                    }
+                })
+            })
+
+            if(!resourcesToSteal){
+                console.log("Robber placed where a steal is not possible")
+                currentPlayer.stealing=false;
+            }
+
+            // vertexVictim.tiles.forEach((tile)=>{
+            //     if(tile.robberStatus==true){
+            //         validVertex=true;
+            //     }
+
+        }else{
+            console.log("You can't move the robber right now")
+        }
 
     }
 
     vertexClicked(id, currentPlayer, board){
         if(currentPlayer.initialTurns==4 || currentPlayer.initialTurns==2) {
             console.log(id);
-            this.currentPlayer.claimElement(id,currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns),board,currentPlayer.initialTurns);
+            currentPlayer.claimElement(id,currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns),board,currentPlayer.initialTurns);
         }
         if(currentPlayer.initialTurns==0){
             if(currentPlayer.ownedVertices.has(id)){
@@ -446,9 +488,48 @@ export class gameBoard{
                 currentPlayer.initialTurns--;
             }
         }
-        if(currentPlayer.initialTurns<0 && document.getElementById("rollDiceButton").disabled){
+        if(currentPlayer.stealing){
+            if(board.claimedVerticesMap.has(id)){
+                let vertexVictim = board.claimedVerticesMap.get(id);
+                let validVertex = false;
+                vertexVictim.tiles.forEach((tile)=>{
+                    if(tile.robberStatus==true){
+                        validVertex=true;
+                    }
+                })
+                if(validVertex==false){
+                    console.log("Selected vertex is not adjacent to robbed tile");
+                    return;
+                }
+            }else{
+                console.log("Selected vertex is not owned by anyone");
+                return;
+            }
+            if(board.vertexOwnersMap.has(id)){
+                let stealVictim = board.vertexOwnersMap.get(id);
+                if(stealVictim===currentPlayer){
+                    console.log("You cannot rob yourself!");
+                    return;
+                }else{
+                    if(stealVictim.resourceCards.length==0){
+                        console.log(stealVictim.name+" did not have any cards to steal!")
+                        currentPlayer.stealing=false;
+                    }
+                    let randomIndex = Math.floor(Math.random()*stealVictim.resourceCards.length);
+                    currentPlayer.addResourceCard(stealVictim.resourceCards[randomIndex])
+                    stealVictim.removeResourceCard(randomIndex,stealVictim.resourceCards[randomIndex]);
+                    console.log(stealVictim.name+" was robbed of a "+currentPlayer.resourceCards[currentPlayer.resourceCards.length-1].toLowerCase());
+                    currentPlayer.stealing=false;
+                }
+                
+            }else{
+                console.log("Selected vertex is not owned by anyone");
+                return;
+            }
+        }
+        if(currentPlayer.initialTurns<0 && document.getElementById("endTurnButton").disabled==false){
             let successCode = currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns);
-            this.currentPlayer.claimElement(id,successCode,board,currentPlayer.initialTurns);
+            currentPlayer.claimElement(id,successCode,board,currentPlayer.initialTurns);
         }
     }
 
@@ -457,7 +538,7 @@ export class gameBoard{
             console.log(id);
             this.currentPlayer.claimElement(id,currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns),board,currentPlayer.initialTurns);
         }
-        if(currentPlayer.initialTurns<0 && document.getElementById("rollDiceButton").disabled){
+        if(currentPlayer.initialTurns<0 && document.getElementById("endTurnButton").disabled==false){
             let successCode = currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns);
             this.currentPlayer.claimElement(id,successCode,board,currentPlayer.initialTurns);
         }

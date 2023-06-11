@@ -7,6 +7,8 @@ export class player{
     resourceCards = [];
     ownedVertices = new Map([]); 
     ownedRoads = new Map([]);
+    movingRobber = false;
+    stealing = false;
 
     constructor (playerNumber, name){
         this.playerNumber = playerNumber;
@@ -75,9 +77,6 @@ export class player{
                 let rowNumber = idOfClick.slice(0,idOfClick.indexOf("."));
                 let columnNumber = idOfClick.slice(idOfClick.indexOf(".")+1);
 
-                console.log(board.claimedVerticesMap);
-                console.log(""+(+rowNumber-1)+"."+columnNumber);
-                console.log(""+(+rowNumber+1)+"."+(columnNumber-1)); 
 
                 if(rowNumber%2 == 0){ //even 
                     if(board.claimedVerticesMap.has(""+(+rowNumber-1)+"."+columnNumber)||board.claimedVerticesMap.has(""+(+rowNumber+1)+"."+(+columnNumber-1))||board.claimedVerticesMap.has(""+(+rowNumber+1)+"."+(+columnNumber+1))){
@@ -164,8 +163,7 @@ export class player{
 
             let woodIndex = this.resourceCards.indexOf("Wood");
             let brickIndex = this.resourceCards.indexOf("Brick");
-            console.log("WoodIndex: "+woodIndex);
-            console.log("BrickIndex: "+brickIndex);
+            
 
             if((woodIndex!=-1 && brickIndex!=-1)|| initial>0){
                 requiredResources = true;
@@ -187,11 +185,8 @@ export class player{
 
             if(initial<0){
 
-                const woodIndex = this.resourceCards.indexOf("Wood");
-                const brickIndex = this.resourceCards.indexOf("Brick");
-
-                this.removeResourceCard(woodIndex,"Wood");
-                this.removeResourceCard(brickIndex,"Brick");
+                this.removeResourceCard(this.resourceCards.indexOf("Wood"),"Wood");
+                this.removeResourceCard(this.resourceCards.indexOf("Brick"),"Brick");
 
             }else{
                 this.initialTurns--;
@@ -206,25 +201,15 @@ export class player{
 
 
             if(initial<0){ 
-                const woodIndex = this.resourceCards.indexOf("Wood");
-                const brickIndex = this.resourceCards.indexOf("Brick");
-                const sheepIndex = this.resourceCards.indexOf("Sheep");
-                const wheatIndex = this.resourceCards.indexOf("Wheat");
+                
+                this.removeResourceCard(this.resourceCards.indexOf("Wood"),"Wood");
 
-                console.log("woodIndex: "+woodIndex);
-                console.log("brickIndex: "+brickIndex);
-                console.log("sheepIndex: "+sheepIndex);
-                console.log("wheatIndex: "+wheatIndex);
-                console.log(this.resourceCards);
+                this.removeResourceCard(this.resourceCards.indexOf("Brick"),"Brick");
 
-                this.removeResourceCard(woodIndex,"Wood");
-                this.removeResourceCard(brickIndex,"Brick");
-                this.removeResourceCard(sheepIndex,"Sheep");
-                this.removeResourceCard(wheatIndex,"Wheat");
-                // this.resourceCards.splice(woodIndex,1);
-                // this.resourceCards.splice(brickIndex,1);
-                // this.resourceCards.splice(sheepIndex,1);
-                // this.resourceCards.splice(wheatIndex,1);
+                this.removeResourceCard(this.resourceCards.indexOf("Sheep"),"Sheep");
+
+                this.removeResourceCard(this.resourceCards.indexOf("Wheat"),"Wheat");
+
             }else{
                 this.initialTurns--;
             }
@@ -233,42 +218,21 @@ export class player{
             board.claimedVerticesMap.set(id,board.vertexMap.get(id));
             board.vertexMap.delete(id);
             document.getElementById(id).setAttribute("fill",this.color);
+
+            board.vertexOwnersMap.set(id,this);
+
             this.numberOfVictoryPoints++;
             
         }
         if(successCode == 3){ //city
 
-            const wheatIndices = [];
-            const rockIndices = [];
-            this.resourceCards.forEach((value,index) =>{
-                if (wheatIndices.length ==2){
 
-                } else{
-                    if(value =="Wheat"){
-                        wheatIndices.push(index);
-                    }
-                }
-
-                if (rockIndices.length ==3){
-
-                } else{
-                    if(value =="Rock"){
-                        rockIndices.push(index);
-                    }
-                }
-            })
-
-            this.removeResourceCard(wheatIndices[0],"Wheat");
-            this.removeResourceCard(wheatIndices[1],"Wheat");
-            this.removeResourceCard(rockIndices[0],"Rock");
-            this.removeResourceCard(rockIndices[1],"Rock");
-            this.removeResourceCard(rockIndices[2],"Rock");
-
-            // this.resourceCards.splice(wheatIndices[0],1);
-            // this.resourceCards.splice(wheatIndices[1],1);
-            // this.resourceCards.splice(rockIndices[0],1);
-            // this.resourceCards.splice(rockIndices[1],1);
-            // this.resourceCards.splice(rockIndices[2],1); 
+            this.removeResourceCard(this.resourceCards.indexOf("Wheat"),"Wheat");
+            this.removeResourceCard(this.resourceCards.indexOf("Wheat"),"Wheat");
+            this.removeResourceCard(this.resourceCards.indexOf("Rock"),"Rock");
+            this.removeResourceCard(this.resourceCards.indexOf("Rock"),"Rock");
+            this.removeResourceCard(this.resourceCards.indexOf("Rock"),"Rock");
+           
             
 
             this.ownedVertices.get(id).power = 2;
@@ -330,20 +294,32 @@ export class player{
 
     }
     removeResourceCard(resourceIndex,resourceString){
+        console.log(resourceString);
+        console.log(resourceIndex)
+        console.log(this.resourceCards);
+
         let playerDiv = document.getElementById(this.name);
-        // let cardID = ""+this.name+"."+resourceIndex;
-        
-        // playerDiv.removeChild(document.getElementById(cardID));
 
         let playerCardElements = playerDiv.children;
         for(let i =0; i<playerCardElements.length;i++){
             if(playerCardElements[i].classList.contains(resourceString)){
                 playerDiv.removeChild(playerCardElements[i]);
-                this.resourceCards.splice(resourceIndex,1);
+                this.resourceCards.splice(resourceIndex,1); ///////splice refactors array! thus index must be recalculated after each deletion
+                console.log(this.resourceCards);
                 return;
             }
         }
 
+    }
 
+    robPlayer(){
+        if(this.resourceCards.length>7){
+            let numberToRemove = Math.floor((this.resourceCards.length)/2);
+            console.log(numberToRemove);
+            for(let i = 0; i<numberToRemove; i++){
+                let randomIndex = Math.floor(Math.random()*this.resourceCards.length);
+                this.removeResourceCard(randomIndex,this.resourceCards[randomIndex]);
+            }
+        }
     }
 }
