@@ -13,6 +13,9 @@ export class gameBoard{
     claimedVerticesMap = new Map([]);
     vertexOwnersMap = new Map([]);
     currentPlayer;
+    outputText = document.getElementById("GameInfo");
+    errorText = document.getElementById("ErrorMessage");
+
 
     constructor(){}
 
@@ -457,25 +460,28 @@ export class gameBoard{
             })
 
             if(!resourcesToSteal){
-                console.log("Robber placed where a steal is not possible")
+                console.log("Robber placed where a steal is not possible");
+                this.errorText.innerHTML="Robber placed where a steal is not possible";
                 currentPlayer.stealing=false;
             }
 
-            // vertexVictim.tiles.forEach((tile)=>{
-            //     if(tile.robberStatus==true){
-            //         validVertex=true;
-            //     }
-
         }else{
-            console.log("You can't move the robber right now")
+            console.log("You can't move the robber right now");
+            this.errorText.innerHTML="You can't move the robber right now";
         }
 
     }
 
     vertexClicked(id, currentPlayer, board){
+        
         if(currentPlayer.initialTurns==4 || currentPlayer.initialTurns==2) {
             console.log(id);
-            currentPlayer.claimElement(id,currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns),board,currentPlayer.initialTurns);
+            let validCode = currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns);
+            currentPlayer.claimElement(id,validCode,board,currentPlayer.initialTurns);
+            if(validCode){
+                this.outputText.innerHTML=this.currentPlayer.name+", please select an adjacent road";
+            }
+
         }
         if(currentPlayer.initialTurns==0){
             if(currentPlayer.ownedVertices.has(id)){
@@ -486,6 +492,8 @@ export class gameBoard{
                     }
                 });
                 currentPlayer.initialTurns--;
+                return;
+                
             }
         }
         if(currentPlayer.stealing){
@@ -499,20 +507,24 @@ export class gameBoard{
                 })
                 if(validVertex==false){
                     console.log("Selected vertex is not adjacent to robbed tile");
+                    this.errorText.innerHTML="Selected vertex is not adjacent to robbed tile";
                     return;
                 }
             }else{
                 console.log("Selected vertex is not owned by anyone");
+                this.errorText.innerHTML="Selected vertex is not owned by anyone";
                 return;
             }
             if(board.vertexOwnersMap.has(id)){
                 let stealVictim = board.vertexOwnersMap.get(id);
                 if(stealVictim===currentPlayer){
                     console.log("You cannot rob yourself!");
+                    this.errorText.innerHTML="You cannot rob yourself!";
                     return;
                 }else{
                     if(stealVictim.resourceCards.length==0){
-                        console.log(stealVictim.name+" did not have any cards to steal!")
+                        console.log(stealVictim.name+" did not have any cards to steal!");
+                        this.errorText.innerHTML=stealVictim.name+" did not have any cards to steal, but that's okay!";
                         currentPlayer.stealing=false;
                     }
                     let randomIndex = Math.floor(Math.random()*stealVictim.resourceCards.length);
@@ -528,6 +540,7 @@ export class gameBoard{
             }
         }
         if(currentPlayer.initialTurns<0 && document.getElementById("endTurnButton").disabled==false){
+            
             let successCode = currentPlayer.isValidPlay(id,board,currentPlayer.initialTurns);
             currentPlayer.claimElement(id,successCode,board,currentPlayer.initialTurns);
         }

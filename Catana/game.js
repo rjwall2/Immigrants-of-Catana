@@ -9,9 +9,17 @@ export class game{
     currentPlayer;
     outputText = document.getElementById("GameInfo");
     currentPlayerText= document.getElementById("CurrentTurnName");
+    errorText = document.getElementById("ErrorMessage");
+    currentPlayerOffer = [];
+    opponentOffer = [];
+    
 
-    constructor(...playerNames){
-        playerNames.forEach((element,index)=>{this.players.set(index,new player(index,element))})
+    constructor(playerNames){
+        playerNames.forEach((element,index)=>{         
+            
+            this.players.set(index,new player(index,element))
+
+        })
         this.board = new gameBoard();
         this.board.initializeBoard();
         this.currentPlayer = this.players.get(0);
@@ -50,7 +58,7 @@ export class game{
         for(let i=0; i<this.players.size;i++){
             const playerFrame = document.createElement("div");
             playerFrame.setAttribute("id",this.currentPlayer.name);
-            playerFrame.setAttribute("style","height: 14.5%; width: 40%; border: inset");
+            playerFrame.setAttribute("style","background: white; height: 14.5%; width: 40%; border: inset");
             playerFrame.setAttribute("border","2px solid")
             const playerHeader = document.createElement("h2");
             playerHeader.setAttribute("style", "font-family: Copperplate Gothic;margin-bottom: 0px;margin-top: 0px; color: "+this.currentPlayer.color)
@@ -64,6 +72,7 @@ export class game{
 
 
         for(let i = 0; i<this.players.size; i++){
+            this.outputText.innerHTML= this.currentPlayer.name+", please select a settlement";
             while(this.currentPlayer.initialTurns!=2){
                 await this.waitForPlayer(50);
             }
@@ -72,6 +81,7 @@ export class game{
 
         this.reverseOrderTurn();
         for(let i = 0; i<this.players.size; i++){
+            this.outputText.innerHTML= this.currentPlayer.name+", please select another settlement";
             while(this.currentPlayer.initialTurns!=0){
                 await this.waitForPlayer(50);
             }
@@ -80,6 +90,7 @@ export class game{
         this.finishTurn();
         
         for(let i = 0; i<this.players.size; i++){
+            this.outputText.innerHTML=this.currentPlayer.name+", please select one of your settlments to gather initial resources";
             while(this.currentPlayer.initialTurns!=-1){
                 await this.waitForPlayer(50);
             }
@@ -87,6 +98,7 @@ export class game{
         }
         
         this.linkButtons();
+        this.outputText.innerHTML=this.currentPlayer.name+", please roll the dice!";
         document.getElementById("endTurnButton").disabled = true;
         document.getElementById("tradeButton").disabled = true;
     }
@@ -115,7 +127,6 @@ export class game{
         }
         this.currentPlayer = this.players.get(this.turnNumber);
         this.board.setCurrentPlayer(this.currentPlayer);
-        
         this.currentPlayerText.innerHTML = "It is currently " + this.currentPlayer.name+ "'s turn";
         
     }
@@ -151,6 +162,7 @@ export class game{
                     })
                 })
             })
+            this.outputText.innerHTML=this.currentPlayer.name+", a "+numberRolled+" was rolled, you may build, trade, or end your turn";
         }
     }
 
@@ -161,30 +173,81 @@ export class game{
         this.players.forEach((player)=>{player.robPlayer();})
         this.currentPlayer.movingRobber=true;
         this.currentPlayer.stealing=true;
+        this.outputText.innerHTML=this.currentPlayer.name+", a 7 was rolled, please move the robber";
         while(this.currentPlayer.movingRobber){
             await this.waitForPlayer(50);
         }
+        this.outputText.innerHTML=this.currentPlayer.name+", please select a peripheral opponent vertex to steal from";
         while(this.currentPlayer.stealing){
             await this.waitForPlayer(50);
         }
         document.getElementById("endTurnButton").disabled = false;
         document.getElementById("tradeButton").disabled = false;
-        //keep writing here 
+        this.outputText.innerHTML=this.currentPlayer.name+", you may build, trade, or end your turn";
     }
 
-    vertexClicked(){
+    trade(){
 
-    }
+        let currentPlayerTrader = document.getElementById(this.currentPlayer.name).cloneNode(true);
+        currentPlayerTrader.setAttribute("style","height: 100%; width: 100%;");
+        document.getElementById("current_cards").appendChild(currentPlayerTrader);
+        let opponentPlayerTrader = document.getElementById("opponent_cards");
 
-    startTrade(){
-        console.log("Should not run yet3")
+        this.players.forEach((player)=>{
+            if(player.name==this.currentPlayer.name){
+                //do not add current player as an opponent
+            }else{
+                let playerSelectButton = document.createElement("button");
+                let id = player.name;
+                playerSelectButton.innerHTML=player.name;
+                playerSelectButton.addEventListener("click",()=>{
+                    while(opponentPlayerTrader.firstChild){
+                        opponentPlayerTrader.removeChild(opponentPlayerTrader.firstChild);
+                    }
+                    let selectedOpponent = document.getElementById(id).cloneNode(true);
+                    selectedOpponent.setAttribute("style","height: 100%; width: 100%;");
+                    opponentPlayerTrader.appendChild(selectedOpponent);
+                    currentPlayerTrader.querySelectorAll(".card").forEach((button)=>{
+                        button.addEventListener("click",()=>{
+                            button.classList.toggle("clicked");
+                            if(button.classList.contains("clicked")){
+                                this.currentPlayerOffer.push(button.classList.item(0));
+                            }else{
+                                this.currentPlayerOffer.splice(this.currentPlayerOffer.indexOf(button.classList.item(0)),1);
+                            }
+                            console.log("current player offer: "+this.currentPlayerOffer);
+                            console.log("opponent player offer: "+this.opponentOffer);   
+            
+                        })
+                    })
+                    opponentPlayerTrader.querySelectorAll(".card").forEach((button)=>{
+                        button.addEventListener("click",()=>{
+                            button.classList.toggle("clicked");
+                            if(button.classList.contains("clicked")){
+                                this.opponentOffer.push(button.classList.item(0));
+                            }else{
+                                this.opponentOffer.splice(this.opponentOffer.indexOf(button.classList.item(0)),1);
+                            }
+                            console.log("current player offer: "+this.currentPlayerOffer);
+                            console.log("opponent player offer: "+this.opponentOffer);
+                        })
+                    })
 
+                })
+                opponentPlayerTrader.appendChild(playerSelectButton);
+
+
+            }
+
+        })
     }
 
     linkButtons(){
         let endTurnButton = document.getElementById("endTurnButton");
         let tradeButton = document.getElementById("tradeButton");
         let rollDiceButton = document.getElementById("rollDiceButton");
+        let tradeWindow = document.getElementById("trade_window");
+        let overlay = document.getElementById("overlay");
 
         //bind ensures that the button knows that the specific object to refer to ex the attributes is this specific game
         endTurnButton.addEventListener("click",()=>{
@@ -192,16 +255,38 @@ export class game{
             finishThisTurn();
             document.getElementById("endTurnButton").disabled = true;
             document.getElementById("tradeButton").disabled = true;
-            document.getElementById("rollDiceButton").disabled = false;}); 
+            document.getElementById("rollDiceButton").disabled = false;
+            this.errorText.innerHTML="";
+            this.outputText.innerHTML= this.currentPlayer.name+", please roll the dice!";}); 
         
-        tradeButton.addEventListener("click", this.startTrade.bind(this));
         
         rollDiceButton.addEventListener("click",()=>{
             document.getElementById("rollDiceButton").disabled = true;
             document.getElementById("tradeButton").disabled = false;
             document.getElementById("endTurnButton").disabled = false;
+            
             let rollThisDice = this.rollDice.bind(this);
             rollThisDice();
+        });
+
+        tradeButton.addEventListener("click",()=>{
+            this.errorText.innerHTML="";
+            tradeWindow.classList.add("active")
+            overlay.classList.add("active");
+            let trade = this.trade.bind(this);
+            trade();
+        });
+
+        overlay.addEventListener("click", ()=>{
+            if(overlay.classList.contains("active")){
+                tradeWindow.classList.remove("active")
+                overlay.classList.remove("active");
+                document.querySelectorAll(".trader").forEach((traderWindow)=>{
+                    if(traderWindow.firstChild!=null){
+                        traderWindow.removeChild(traderWindow.firstChild)
+                    }
+                });
+            }
         });
     }
 

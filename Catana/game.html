@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="trade_window" id="trade_window">
+        <div class="trader" id="opponent_cards"></div>  
+        <div class="trader" id="current_cards"></div>
+        <div id="trade_instructions"></div>
+    </div>
+    
+    <svg id = "board" height = "80%" width = "60%">
+        <defs>
+            <pattern id="Sheep" height="100%" width="100%" patternContentUnits="objectBoundingBox">
+                <image height="1" width="1" preserveAspectRatio="none" href="./Images/Sheep.png" />
+            </pattern>
+            <pattern id="Wood" height="100%" width="100%" patternContentUnits="objectBoundingBox">
+                <image height="1" width="1" preserveAspectRatio="none" href="./Images/Wood.png" />
+            </pattern>
+            <pattern id="Wheat" height="100%" width="100%" patternContentUnits="objectBoundingBox">
+                <image height="1" width="1" preserveAspectRatio="none" href="./Images/Wheat.jpg" />
+            </pattern>
+            <pattern id="Rock" height="100%" width="100%" patternContentUnits="objectBoundingBox">
+                <image height="1" width="1" preserveAspectRatio="none" href="./Images/Rock.jpg" />
+            </pattern>
+            <pattern id="Brick" height="100%" width="100%" patternContentUnits="objectBoundingBox">
+                <image height="1" width="1" preserveAspectRatio="none" href="./Images/Brick.jpg" />
+            </pattern>
+            <pattern id="Desert" height="100%" width="100%" patternContentUnits="objectBoundingBox">
+                <image height="1" width="1" preserveAspectRatio="none" href="./Images/Desert.jpg" />
+            </pattern>
+            <filter id="robbed">
+                <feColorMatrix type="luminanceToAlpha"/>
+            </filter>
+        </defs>
+    </svg>
+    <p id = "CurrentTurnName">hi</p>
+    <p id="GameInfo">You are cool</p>
+    <p id="TurnOrder"></p>
+    <p id="ErrorMessage"></p>
+    <button id = "endTurnButton">End Turn</button>
+    <button id = "tradeButton" >Trade</button>
+    <button id = "rollDiceButton">Roll Dice</button>
+    <script type='module' src="start.js"></script>
+    <div id="overlay"></div>
+</body>
+</html>

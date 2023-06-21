@@ -9,6 +9,7 @@ export class player{
     ownedRoads = new Map([]);
     movingRobber = false;
     stealing = false;
+    errorText = document.getElementById("ErrorMessage");
 
     constructor (playerNumber, name){
         this.playerNumber = playerNumber;
@@ -38,6 +39,10 @@ export class player{
         if(colonIndex == -1){ //vertex clicked
 
             if(this.ownedVertices.has(idOfClick)){ //trying to build city
+
+                if(this.ownedVertices.get(idOfClick).power==2){
+                    return 0; //can't advance a city further
+                }
                 connectingRoad = true;
                 const wheatIndices = [];
                 const rockIndices = [];
@@ -63,14 +68,21 @@ export class player{
                     requiredResources = true;
                 }
 
+                
+
                 if(connectingRoad && requiredResources){ 
                     return 3;
+                }else{
+                    if(initial<0){
+                        this.errorText.innerHTML="Insufficient resources to build a city";    
+                    }
                 }
 
             }else{ // unowned vertex
 
                 if(!board.vertexMap.has(idOfClick)){
                     console.log("This element is already owned!"); 
+                    this.errorText.innerHTML="This element is already owned!";
                     return 0;
                 }
 
@@ -81,11 +93,13 @@ export class player{
                 if(rowNumber%2 == 0){ //even 
                     if(board.claimedVerticesMap.has(""+(+rowNumber-1)+"."+columnNumber)||board.claimedVerticesMap.has(""+(+rowNumber+1)+"."+(+columnNumber-1))||board.claimedVerticesMap.has(""+(+rowNumber+1)+"."+(+columnNumber+1))){
                         console.log("Settlements must be at least two roads apart");
+                        this.errorText.innerHTML="Settlements must be at least two roads apart";
                         return 0;
                     }
                 }else{ //odd
                     if(board.claimedVerticesMap.has(""+(+rowNumber+1)+"."+columnNumber)||board.claimedVerticesMap.has(""+(+rowNumber-1)+"."+(+columnNumber-1))||board.claimedVerticesMap.has(""+(+rowNumber-1)+"."+(+columnNumber+1))){
                         console.log("Settlements must be at least two roads apart");
+                        this.errorText.innerHTML="Settlements must be at least two roads apart";
                         return 0;
                     } 
                 }
@@ -115,6 +129,14 @@ export class player{
 
                 if((connectingRoad && requiredResources)||initial>0){
                     return 2;
+                }else{
+                    if(!connectingRoad && !requiredResources){
+                        this.errorText.innerHTML="Insufficient resources and no connecting road";
+                    }else if(connectingRoad==false){
+                        this.errorText.innerHTML="No connecting road";
+                    }else if(requiredResources==false){
+                        this.errorText.innerHTML="Insufficient resources";
+                    }
                 }
             }
 
@@ -123,7 +145,8 @@ export class player{
         } else{ //road clicked
 
             if(!board.roadMap.has(idOfClick)){
-                console.log("This element is already owned!"); 
+                console.log("This element is already owned!");
+                this.errorText.innerHTML="This element is already owned!"; 
                 return 0;
             }
 
@@ -155,7 +178,8 @@ export class player{
                 if(end1 == valid || end2 == valid){
                     connectingRoad=true;
                 }else{
-                    console.log("Must build adjacent to latest placed settlement")
+                    console.log("Must build adjacent to latest placed settlement");
+                    this.errorText.innerHTML="Must build road adjacent to latest placed settlement";
                     connectingRoad=false;
                 }
             }
@@ -171,6 +195,14 @@ export class player{
 
             if(connectingRoad && requiredResources){
                 return 1;
+            }else{
+                if(!connectingRoad && !requiredResources){
+                    this.errorText.innerHTML="Insufficient resources and no connecting road";
+                }else if(connectingRoad==false){
+                    this.errorText.innerHTML="No connecting road";
+                }else if(requiredResources==false){
+                    this.errorText.innerHTML="Insufficient resources";
+                }
             }
 
         }
@@ -180,7 +212,6 @@ export class player{
 
     claimElement(id, successCode, board, initial){
         
-        console.log("SuccessCode was: "+successCode);
         if(successCode == 1){ //road
 
             if(initial<0){
@@ -195,6 +226,7 @@ export class player{
             this.ownedRoads.set(id,board.roadMap.get(id));
             board.roadMap.delete(id);
             document.getElementById(id).setAttribute("fill",this.color);
+            this.errorText.innerHTML="";
         }
         if(successCode == 2){ //settlement
 
@@ -218,6 +250,7 @@ export class player{
             board.claimedVerticesMap.set(id,board.vertexMap.get(id));
             board.vertexMap.delete(id);
             document.getElementById(id).setAttribute("fill",this.color);
+            this.errorText.innerHTML="";
 
             board.vertexOwnersMap.set(id,this);
 
@@ -250,21 +283,14 @@ export class player{
 
             const svg = document.getElementById("board");
             const xmlns = "http://www.w3.org/2000/svg";
-            const newText = document.createElementNS(xmlns,"text");      
-            newText.setAttribute("id", id);
-            newText.setAttribute("x",topPointX);
-            newText.setAttribute("y",dotYCoord);
-            newText.setAttribute("fill","black");
-            newText.setAttribute("font-size","2em");
-            newText.setAttribute("text-anchor","middle");
-            newText.setAttribute("transform", "scale("+ svg.clientHeight/640+")translate(" + svg.clientWidth/50 + ")")
-            newText.innerHTML = ".";
-            svg.append(newText);
-            // newText.addEventListener("click",tileClicked);////////////
-            console.log(topPointX)
-            console.log(dotYCoord)
-            console.log(this.ownedVertices);
-            console.log(newCity);
+            const newDot = document.createElementNS(xmlns,"circle");      
+            newDot.setAttribute("cx",topPointX);
+            newDot.setAttribute("cy",dotYCoord);
+            newDot.setAttribute("fill","black");
+            newDot.setAttribute("r","2");
+            newDot.setAttribute("transform", "scale("+ svg.clientHeight/640+")translate(" + svg.clientWidth/50 + ")")
+            svg.append(newDot);
+            this.errorText.innerHTML="";
 
             this.numberOfVictoryPoints++;
 
@@ -273,30 +299,15 @@ export class player{
 
     addResourceCard(resourceString){
         this.resourceCards.push(resourceString);
-        // let cardIndex = this.resourceCards.length-1;
 
         let newCard = document.createElement("button");
-        // newCard.setAttribute("id",this.name+"."+cardIndex);//FLAWED SYSTEM AS INDEX CHANGES
-        newCard.setAttribute("class",resourceString);
+        newCard.classList.add(resourceString,"card");
         
-        if(resourceString=="Wood"){
-            newCard.setAttribute("style","background: url(./Images/Wood.png); background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%");         
-        }else if(resourceString=="Wheat"){
-            newCard.setAttribute("style","background: url(./Images/Wheat.jpg);background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%")
-        }else if(resourceString=="Sheep"){
-            newCard.setAttribute("style","background: url(./Images/Sheep.png);background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%")
-        }else  if(resourceString=="Brick"){
-            newCard.setAttribute("style","background: url(./Images/Brick.jpg);background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%")
-        }else if(resourceString=="Rock"){
-            newCard.setAttribute("style","background: url(./Images/Rock.jpg);background-position:center; background-size:cover; height:60%; width:7%; margin-left:2%")
-        }
         document.getElementById(this.name).append(newCard);
 
     }
     removeResourceCard(resourceIndex,resourceString){
-        console.log(resourceString);
-        console.log(resourceIndex)
-        console.log(this.resourceCards);
+
 
         let playerDiv = document.getElementById(this.name);
 
@@ -305,7 +316,6 @@ export class player{
             if(playerCardElements[i].classList.contains(resourceString)){
                 playerDiv.removeChild(playerCardElements[i]);
                 this.resourceCards.splice(resourceIndex,1); ///////splice refactors array! thus index must be recalculated after each deletion
-                console.log(this.resourceCards);
                 return;
             }
         }
@@ -315,7 +325,6 @@ export class player{
     robPlayer(){
         if(this.resourceCards.length>7){
             let numberToRemove = Math.floor((this.resourceCards.length)/2);
-            console.log(numberToRemove);
             for(let i = 0; i<numberToRemove; i++){
                 let randomIndex = Math.floor(Math.random()*this.resourceCards.length);
                 this.removeResourceCard(randomIndex,this.resourceCards[randomIndex]);
