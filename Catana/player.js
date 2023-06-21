@@ -322,6 +322,31 @@ export class player{
 
     }
 
+    removeResourceCardClone(resourceString,clone){
+
+
+        let playerDiv = clone;
+
+        let playerCardElements = playerDiv.children;
+        for(let i =0; i<playerCardElements.length;i++){
+            if(playerCardElements[i].classList.contains(resourceString)){
+                playerDiv.removeChild(playerCardElements[i]);
+                
+                return;
+            }
+        }
+
+    }
+
+    addResourceCardClone(resourceString,clone){
+
+        let newCard = document.createElement("button");
+        newCard.classList.add(resourceString,"card");
+        
+        clone.append(newCard);
+
+    }
+
     robPlayer(){
         if(this.resourceCards.length>7){
             let numberToRemove = Math.floor((this.resourceCards.length)/2);

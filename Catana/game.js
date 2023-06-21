@@ -61,6 +61,7 @@ export class game{
             playerFrame.setAttribute("style","background: white; height: 14.5%; width: 40%; border: inset");
             playerFrame.setAttribute("border","2px solid")
             const playerHeader = document.createElement("h2");
+            playerHeader.classList.add("player_header");
             playerHeader.setAttribute("style", "font-family: Copperplate Gothic;margin-bottom: 0px;margin-top: 0px; color: "+this.currentPlayer.color)
             playerHeader.innerHTML = this.currentPlayer.name;
             playerFrame.append(playerHeader);
@@ -186,27 +187,44 @@ export class game{
         this.outputText.innerHTML=this.currentPlayer.name+", you may build, trade, or end your turn";
     }
 
-    trade(){
+    setupTrade(){
 
         let currentPlayerTrader = document.getElementById(this.currentPlayer.name).cloneNode(true);
+        currentPlayerTrader.setAttribute("id","current_player_clone");
         currentPlayerTrader.setAttribute("style","height: 100%; width: 100%;");
         document.getElementById("current_cards").appendChild(currentPlayerTrader);
         let opponentPlayerTrader = document.getElementById("opponent_cards");
+        let instructionPanel = document.getElementById("trade_instructions");
+        let instructions = document.createElement("p");
+        instructions.setAttribute("id","trade_text");
+        instructions.innerHTML="Please choose someone to trade with!";
+        instructionPanel.appendChild(instructions);
+
 
         this.players.forEach((player)=>{
             if(player.name==this.currentPlayer.name){
                 //do not add current player as an opponent
             }else{
                 let playerSelectButton = document.createElement("button");
-                let id = player.name;
+                let opponentName = player.name;
                 playerSelectButton.innerHTML=player.name;
+
                 playerSelectButton.addEventListener("click",()=>{
                     while(opponentPlayerTrader.firstChild){
                         opponentPlayerTrader.removeChild(opponentPlayerTrader.firstChild);
                     }
-                    let selectedOpponent = document.getElementById(id).cloneNode(true);
+                    let selectedOpponent = document.getElementById(opponentName).cloneNode(true);
                     selectedOpponent.setAttribute("style","height: 100%; width: 100%;");
+                    selectedOpponent.setAttribute("id","opponent_player_clone");
                     opponentPlayerTrader.appendChild(selectedOpponent);
+
+                    instructions.innerHTML="Click cards to trade, then click confirm!";
+                    let confirmTrade = document.createElement("button");
+                    confirmTrade.setAttribute("id","confirm_trade_button");
+                    confirmTrade.innerHTML="confirm";
+                    confirmTrade.addEventListener("click",()=>{this.executeTrade(opponentName,currentPlayerTrader,selectedOpponent)});
+                    instructionPanel.appendChild(confirmTrade);
+
                     currentPlayerTrader.querySelectorAll(".card").forEach((button)=>{
                         button.addEventListener("click",()=>{
                             button.classList.toggle("clicked");
@@ -220,6 +238,7 @@ export class game{
             
                         })
                     })
+
                     opponentPlayerTrader.querySelectorAll(".card").forEach((button)=>{
                         button.addEventListener("click",()=>{
                             button.classList.toggle("clicked");
@@ -239,6 +258,45 @@ export class game{
 
             }
 
+        })
+    }
+
+    executeTrade(opponentName,currentPlayerClone,opponentClone){
+        console.log(opponentName);
+        if(this.currentPlayerOffer.length==0 || this.opponentOffer.length==0){
+            return;
+        }
+        this.players.forEach((player)=>{
+            if(player.name == opponentName){
+                let opponent = player;
+                this.opponentOffer.forEach((resource)=>{
+                    opponent.removeResourceCard(opponent.resourceCards.indexOf(resource),resource);
+                    opponent.removeResourceCardClone(resource,opponentClone)
+                })
+                this.currentPlayerOffer.forEach((resource)=>{
+                    this.currentPlayer.removeResourceCard(this.currentPlayer.resourceCards.indexOf(resource),resource);
+                    this.currentPlayer.removeResourceCardClone(resource,currentPlayerClone);
+                })
+
+                this.currentPlayerOffer.forEach((resource)=>{
+                    opponent.addResourceCard(resource);
+                    opponent.addResourceCardClone(resource,opponentClone)
+                })
+                this.opponentOffer.forEach((resource)=>{
+                    this.currentPlayer.addResourceCard(resource);
+                    this.currentPlayer.addResourceCardClone(resource,currentPlayerClone);
+                })
+
+                this.opponentOffer.length = 0;
+                this.currentPlayerOffer.length = 0;
+
+                document.getElementById("trade_window").querySelectorAll(".clicked").forEach((button)=>{button.classList.toggle("clicked");
+                })
+
+                return;
+            }else{
+                //check next player
+            }
         })
     }
 
@@ -273,8 +331,8 @@ export class game{
             this.errorText.innerHTML="";
             tradeWindow.classList.add("active")
             overlay.classList.add("active");
-            let trade = this.trade.bind(this);
-            trade();
+            let setupTrade = this.setupTrade.bind(this);
+            setupTrade();
         });
 
         overlay.addEventListener("click", ()=>{
@@ -285,7 +343,13 @@ export class game{
                     if(traderWindow.firstChild!=null){
                         traderWindow.removeChild(traderWindow.firstChild)
                     }
-                });
+                })
+                let instructionWindow = document.getElementById("trade_instructions");
+                while(instructionWindow.firstChild!=null){
+                    instructionWindow.removeChild(instructionWindow.firstChild);
+                }
+                this.opponentOffer.length = 0;
+                this.currentPlayerOffer.length = 0;
             }
         });
     }
