@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <label>Enter the names of at least 2 players</label><br>
-    <input type="text" id="Player1"><br>
-    <input type="text" id="Player2"><br>
-    <input type="text" id="Player3"><br>
-    <input type="text" id="Player4"><br>
+    <h1 id="title"> Welcome to Catana!</h1>
+    <label id = "input_instructions">Enter the names of at least 2 players</label><br>
+    <input class ="name_input_field" type="text" id="Player1"><br>
+    <input class ="name_input_field" type="text" id="Player2"><br>
+    <input class ="name_input_field" type="text" id="Player3"><br>
+    <input class ="name_input_field" type="text" id="Player4"><br>
     <button type = "button" id="PlayerSubmitButton">Submit</button>
     <script>
         document.getElementById("PlayerSubmitButton").onclick = function(){

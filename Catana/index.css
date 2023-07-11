@@ -1,0 +1,20 @@
+body{
+    background: url('./Images/Background.jpg');
+    background-size: cover;
+    
+}
+#name_input_field{
+    
+}
+#title{
+    font-family: Minion;
+}
+#input_instructions{
+    font-family: Minion;
+    font-weight: bold;
+}
+#PlayerSubmitButton{
+    font-weight: bold;
+    color:gold;
+    background-color: firebrick;
+}

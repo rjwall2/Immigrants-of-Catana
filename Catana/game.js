@@ -58,7 +58,7 @@ export class game{
         for(let i=0; i<this.players.size;i++){
             const playerFrame = document.createElement("div");
             playerFrame.setAttribute("id",this.currentPlayer.name);
-            playerFrame.setAttribute("style","background: white; height: 14.5%; width: 40%; border: inset");
+            playerFrame.setAttribute("style","background: white; height: 17.5%; width: 40%; border: inset");
             playerFrame.setAttribute("border","2px solid")
             const playerHeader = document.createElement("h2");
             playerHeader.classList.add("player_header");
@@ -208,6 +208,8 @@ export class game{
                 let playerSelectButton = document.createElement("button");
                 let opponentName = player.name;
                 playerSelectButton.innerHTML=player.name;
+                playerSelectButton.setAttribute("style","color:"+player.color);
+                playerSelectButton.setAttribute("class","player_trade_button");
 
                 playerSelectButton.addEventListener("click",()=>{
                     while(opponentPlayerTrader.firstChild){
@@ -293,6 +295,8 @@ export class game{
                 document.getElementById("trade_window").querySelectorAll(".clicked").forEach((button)=>{button.classList.toggle("clicked");
                 })
 
+                this.closePopUp();
+
                 return;
             }else{
                 //check next player
@@ -309,6 +313,9 @@ export class game{
 
         //bind ensures that the button knows that the specific object to refer to ex the attributes is this specific game
         endTurnButton.addEventListener("click",()=>{
+            if(this.checkWin()){
+                return;
+            };
             let finishThisTurn = this.finishTurn.bind(this);
             finishThisTurn();
             document.getElementById("endTurnButton").disabled = true;
@@ -336,22 +343,60 @@ export class game{
         });
 
         overlay.addEventListener("click", ()=>{
-            if(overlay.classList.contains("active")){
-                tradeWindow.classList.remove("active")
-                overlay.classList.remove("active");
-                document.querySelectorAll(".trader").forEach((traderWindow)=>{
-                    if(traderWindow.firstChild!=null){
-                        traderWindow.removeChild(traderWindow.firstChild)
-                    }
-                })
-                let instructionWindow = document.getElementById("trade_instructions");
-                while(instructionWindow.firstChild!=null){
-                    instructionWindow.removeChild(instructionWindow.firstChild);
-                }
-                this.opponentOffer.length = 0;
-                this.currentPlayerOffer.length = 0;
-            }
+            let boundClosePopUp = this.closePopUp.bind(this);
+            boundClosePopUp();
         });
+        // ()=>{
+        //     if(overlay.classList.contains("active")){
+        //         tradeWindow.classList.remove("active");
+        //         overlay.classList.remove("active");
+        //         document.querySelectorAll(".trader").forEach((traderWindow)=>{
+        //             while(traderWindow.firstChild!=null){
+        //                 traderWindow.removeChild(traderWindow.firstChild);
+        //             }
+        //         })
+        //         let instructionWindow = document.getElementById("trade_instructions");
+        //         while(instructionWindow.firstChild!=null){
+        //             instructionWindow.removeChild(instructionWindow.firstChild);
+        //         }
+        //         this.opponentOffer.length = 0;
+        //         this.currentPlayerOffer.length = 0;
+        //     }
+        // });
+    }
+
+    closePopUp(){
+        console.log(this.opponentOffer);
+        let tradeWindow = document.getElementById("trade_window");
+        let overlay = document.getElementById("overlay");
+
+        if(overlay.classList.contains("active")){
+            tradeWindow.classList.remove("active");
+            overlay.classList.remove("active");
+            document.querySelectorAll(".trader").forEach((traderWindow)=>{
+                while(traderWindow.firstChild!=null){
+                    traderWindow.removeChild(traderWindow.firstChild);
+                }
+            })
+            let instructionWindow = document.getElementById("trade_instructions");
+            while(instructionWindow.firstChild!=null){
+                instructionWindow.removeChild(instructionWindow.firstChild);
+            }
+            this.opponentOffer.length = 0;
+            this.currentPlayerOffer.length = 0;
+        }
+    }
+    checkWin(){
+        if(this.currentPlayer.numberOfVictoryPoints>=10){
+            let winWindow = document.getElementById("win_window");
+            let winOverlay = document.getElementById("win_overlay");
+            this.errorText.innerHTML="";
+            winWindow.classList.add("active")
+            winOverlay.classList.add("active");
+            return true;
+        }else{
+            return false;
+        }
     }
 
 }

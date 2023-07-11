@@ -269,27 +269,8 @@ export class player{
             
 
             this.ownedVertices.get(id).power = 2;
-            let rowNumber = id.slice(0,id.indexOf("."));
-            let newCity = document.getElementById(id);
-            let trianglePoints = newCity.getAttribute("points");
-            let topPointX = Number(trianglePoints.slice(0,trianglePoints.indexOf(" ")));
-            let topPointY = Number(trianglePoints.slice(trianglePoints.indexOf(" ")+1,trianglePoints.indexOf(",")));
-            let dotYCoord;
-            if(rowNumber%2 == 0){
-                dotYCoord = topPointY -10;
-            } else{
-                dotYCoord = topPointY +13;
-            }
 
-            const svg = document.getElementById("board");
-            const xmlns = "http://www.w3.org/2000/svg";
-            const newDot = document.createElementNS(xmlns,"circle");      
-            newDot.setAttribute("cx",topPointX);
-            newDot.setAttribute("cy",dotYCoord);
-            newDot.setAttribute("fill","black");
-            newDot.setAttribute("r","2");
-            newDot.setAttribute("transform", "scale("+ svg.clientHeight/640+")translate(" + svg.clientWidth/50 + ")")
-            svg.append(newDot);
+            document.getElementById(id).setAttribute("fill","url(#grad"+this.playerNumber+")")
             this.errorText.innerHTML="";
 
             this.numberOfVictoryPoints++;

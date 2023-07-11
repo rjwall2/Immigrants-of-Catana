@@ -13,6 +13,7 @@
         <div class="trader" id="current_cards"></div>
         <div id="trade_instructions"></div>
     </div>
+    <div class = "win_window" id="win_window"></div>
     
     <svg id = "board" height = "80%" width = "60%">
         <defs>
@@ -20,7 +21,7 @@
                 <image height="1" width="1" preserveAspectRatio="none" href="./Images/Sheep.png" />
             </pattern>
             <pattern id="Wood" height="100%" width="100%" patternContentUnits="objectBoundingBox">
-                <image height="1" width="1" preserveAspectRatio="none" href="./Images/Wood.png" />
+                <image height="1" width="1.5" preserveAspectRatio="none" href="./Images/Wood.jpg" />
             </pattern>
             <pattern id="Wheat" height="100%" width="100%" patternContentUnits="objectBoundingBox">
                 <image height="1" width="1" preserveAspectRatio="none" href="./Images/Wheat.jpg" />
@@ -37,10 +38,30 @@
             <filter id="robbed">
                 <feColorMatrix type="luminanceToAlpha"/>
             </filter>
+            <radialGradient id="grad0" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                <stop offset="0%" style="stop-color:rgb(255,255,255);
+                stop-opacity:1" />
+                <stop offset="100%" style="stop-color:red;stop-opacity:1" />
+              </radialGradient>
+              <radialGradient id="grad1" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                <stop offset="0%" style="stop-color:rgb(255,255,255);
+                stop-opacity:1" />
+                <stop offset="100%" style="stop-color:deepskyblue;stop-opacity:1" />
+              </radialGradient>
+              <radialGradient id="grad2" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                <stop offset="0%" style="stop-color:rgb(255,255,255);
+                stop-opacity:0" />
+                <stop offset="100%" style="stop-color:green;stop-opacity:1" />
+              </radialGradient>
+              <radialGradient id="grad3" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                <stop offset="0%" style="stop-color:rgb(255,255,255);
+                stop-opacity:0" />
+                <stop offset="100%" style="stop-color:orange;stop-opacity:1" />
+              </radialGradient>
         </defs>
     </svg>
-    <p id = "CurrentTurnName">hi</p>
-    <p id="GameInfo">You are cool</p>
+    <p id = "CurrentTurnName"></p>
+    <p id="GameInfo"></p>
     <p id="TurnOrder"></p>
     <p id="ErrorMessage"></p>
     <button id = "endTurnButton">End Turn</button>
@@ -48,5 +69,6 @@
     <button id = "rollDiceButton">Roll Dice</button>
     <script type='module' src="start.js"></script>
     <div id="overlay"></div>
+    <div id="win_overlay"></div>
 </body>
 </html>
