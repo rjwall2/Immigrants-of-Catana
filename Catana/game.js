@@ -393,6 +393,14 @@ export class game{
             this.errorText.innerHTML="";
             winWindow.classList.add("active")
             winOverlay.classList.add("active");
+            document.getElementById("winner_text").innerHTML = "Congratulations "+this.currentPlayer.name+", you won!"
+            let playerStats = document.getElementById("end_player_stats");
+            this.players.forEach((player) =>{
+                let playerStat = document.createElement("p");
+                playerStat.setAttribute("class","playerStat");
+                playerStat.innerHTML = player.name+": "+player.numberOfVictoryPoints;
+                playerStats.appendChild(playerStat);
+            })
             return true;
         }else{
             return false;

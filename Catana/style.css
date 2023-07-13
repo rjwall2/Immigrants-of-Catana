@@ -245,5 +245,14 @@ body{
     opacity:1;
     pointer-events: all;
 }
-
+#winner_text{
+    font-weight: bold;
+    font-family:Minion;
+    margin-bottom: 5%;
+    margin-top: 2%;
+    margin-left: 2%;
+}
+#end_player_stats{
+    margin-left: 2%;
+}
 
