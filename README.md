@@ -7,7 +7,7 @@ Implemented using object-oriented Vanilla JavaScript, HTML, CSS, and driven by b
 
 
 Gameplay:
-![Catan](https://github.com/rjwall2/Immigrants-of-Catana/assets/68371179/04dc78ad-749e-45b5-83fe-85c762a76509)
+![Catan_2](https://github.com/rjwall2/Immigrants-of-Catana/assets/68371179/42bc110e-ea2c-4547-b53b-8581aa98add5)
 
 Trading Window:
-![Catan_2](https://github.com/rjwall2/Immigrants-of-Catana/assets/68371179/93d6543d-e424-4325-a3f3-6272c2252047)
+![Catan_2](https://github.com/rjwall2/Immigrants-of-Catana/assets/68371179/bbaf7d46-f509-442a-8af7-5fb42e70a0f3)
